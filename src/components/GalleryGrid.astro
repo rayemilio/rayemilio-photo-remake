@@ -1,0 +1,87 @@
+---
+import { Picture, getImage } from "astro:assets";
+import type { Gallery } from "../lib/gallery";
+
+type Props = {
+  gallery: Gallery;
+};
+
+const { gallery } = Astro.props;
+const thumbnailWidths = [320, 480, 720, 960, 1280, 1600];
+const sizes = "(min-width: 960px) calc((100vw - 330px) / 3), (min-width: 680px) calc((100vw - 72px) / 2), calc(100vw - 32px)";
+
+const lightboxItems = await Promise.all(
+  gallery.photos.map(async (photo, index) => {
+    const full = photo.isSvg
+      ? { src: photo.image.src }
+      : await getImage({
+          src: photo.image,
+          width: Math.min(photo.width, 2400),
+          format: "webp",
+          quality: 88
+        });
+
+    return {
+      index,
+      category: gallery.slug,
+      categoryTitle: gallery.title,
+      categoryHref: gallery.href,
+      slug: photo.slug,
+      href: photo.href,
+      src: full.src,
+      width: photo.width,
+      height: photo.height,
+      alt: photo.alt,
+      caption: photo.caption,
+      details: photo.details
+    };
+  })
+);
+---
+
+<script is:inline type="application/json" data-gallery-json={gallery.slug} set:html={JSON.stringify(lightboxItems)} />
+<script>
+  import "../scripts/lightbox";
+</script>
+
+<div class="gallery-grid" data-gallery={gallery.slug}>
+  {gallery.photos.map((photo, index) => (
+    <a
+      class="gallery-item gallery-link"
+      href={photo.href}
+      data-lightbox-photo
+      data-gallery-id={gallery.slug}
+      data-photo-index={index}
+      style={`--aspect-ratio: ${photo.width} / ${photo.height};`}
+    >
+      {photo.isSvg ? (
+        <img
+          src={photo.image.src}
+          width={photo.width}
+          height={photo.height}
+          alt={photo.alt}
+          loading={index < 2 ? "eager" : "lazy"}
+          decoding="async"
+        />
+      ) : (
+        <Picture
+          src={photo.image}
+          widths={thumbnailWidths}
+          formats={["avif", "webp"]}
+          fallbackFormat="jpg"
+          sizes={sizes}
+          alt={photo.alt}
+          loading={index < 2 ? "eager" : "lazy"}
+          decoding="async"
+          quality={82}
+        />
+      )}
+      {(photo.caption || photo.details) && (
+        <span class="gallery-caption">
+          {photo.caption && <span>{photo.caption}</span>}
+          {photo.details && <span>{photo.details}</span>}
+        </span>
+      )}
+    </a>
+  ))}
+</div>

@@ -1,0 +1,44 @@
+---
+import { Picture } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPhotoByRef, getSiteContent } from "../lib/gallery";
+
+const site = getSiteContent();
+const homePhoto = getPhotoByRef(site.home.photo);
+---
+
+<BaseLayout>
+  <section class="home-hero" aria-label="Home">
+    {homePhoto && (
+      <a class="home-image" href={homePhoto.href}>
+        {homePhoto.isSvg ? (
+          <img
+            src={homePhoto.image.src}
+            width={homePhoto.width}
+            height={homePhoto.height}
+            alt={homePhoto.alt}
+            loading="eager"
+            decoding="async"
+          />
+        ) : (
+          <Picture
+            src={homePhoto.image}
+            widths={[640, 960, 1280, 1600, 2200]}
+            formats={["avif", "webp"]}
+            fallbackFormat="jpg"
+            sizes="(min-width: 960px) calc(100vw - 380px), calc(100vw - 32px)"
+            alt={homePhoto.alt}
+            loading="eager"
+            decoding="async"
+            quality={88}
+          />
+        )}
+      </a>
+    )}
+
+    <blockquote class="home-quote">
+      <p>{site.home.quote}</p>
+      {site.home.quoteCredit && <cite>{site.home.quoteCredit}</cite>}
+    </blockquote>
+  </section>
+</BaseLayout>

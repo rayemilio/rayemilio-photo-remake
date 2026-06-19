@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteContent } from "../lib/gallery";
+
+const site = getSiteContent();
+---
+
+<BaseLayout title="About" description={site.description}>
+  <article class="text-page">
+    <h1>{site.about.heading}</h1>
+    {site.about.body.map((paragraph) => <p>{paragraph}</p>)}
+  </article>
+</BaseLayout>

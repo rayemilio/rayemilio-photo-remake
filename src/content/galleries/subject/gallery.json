@@ -1,0 +1,27 @@
+{
+  "title": "Subject",
+  "order": 3,
+  "photos": [
+    {
+      "file": "subject-01.svg",
+      "slug": "subject-01",
+      "alt": "Placeholder subject image with a seated silhouette",
+      "caption": "Subject placeholder 01",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "subject-02.svg",
+      "slug": "subject-02",
+      "alt": "Placeholder subject image with a standing silhouette",
+      "caption": "Subject placeholder 02",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "subject-03.svg",
+      "slug": "subject-03",
+      "alt": "Placeholder subject image with a close portrait silhouette",
+      "caption": "Subject placeholder 03",
+      "details": "Replace with final caption details."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Ray Emilio",
+  "subtitle": "Fine Art Photography",
+  "description": "A file-managed photography portfolio.",
+  "home": {
+    "photo": {
+      "category": "architecture",
+      "slug": "architecture-01"
+    },
+    "quote": "The devil's finest trick is to persuade you that he does not exist.",
+    "quoteCredit": "-Charles Baudelaire"
+  },
+  "about": {
+    "heading": "Artist Statement",
+    "body": [
+      "Artist statement placeholder. Replace this text with the final statement when it is ready.",
+      "The page layout is in place so copy can be updated without changing the gallery system."
+    ]
+  }
+}

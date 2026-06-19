@@ -1,0 +1,104 @@
+---
+import { getGalleries, getSiteContent } from "../lib/gallery";
+import "../styles/global.css";
+
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+const site = getSiteContent();
+const galleries = getGalleries();
+const pageTitle = Astro.props.title ? `${Astro.props.title} | ${site.title}` : site.title;
+const description = Astro.props.description ?? site.description;
+const pathname = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(href);
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div class="site-shell">
+      <aside class="site-nav" aria-label="Primary navigation">
+        <a class="site-brand" href="/">
+          <span class="site-title">{site.title}</span>
+          <span class="site-subtitle">{site.subtitle}</span>
+        </a>
+        <nav class="nav-links">
+          {galleries.map((gallery) => (
+            <a class:list={{ active: isActive(gallery.href) }} href={gallery.href}>
+              {gallery.title.toLowerCase()}
+            </a>
+          ))}
+          <a class:list={{ active: isActive("/about/") }} href="/about/">artist statement</a>
+          <a class:list={{ active: isActive("/prints/") }} href="/prints/">buy prints</a>
+        </nav>
+      </aside>
+
+      <header class="mobile-header">
+        <a class="mobile-title" href="/">
+          <span class="site-title">{site.title}</span>
+          <span class="site-subtitle">{site.subtitle}</span>
+        </a>
+        <button class="mobile-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Toggle navigation">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
+        {galleries.map((gallery) => (
+          <a class:list={{ active: isActive(gallery.href) }} href={gallery.href}>
+            {gallery.title.toLowerCase()}
+          </a>
+        ))}
+        <a class:list={{ active: isActive("/about/") }} href="/about/">artist statement</a>
+        <a class:list={{ active: isActive("/prints/") }} href="/prints/">buy prints</a>
+      </nav>
+
+      <main class="site-main">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      const toggle = document.querySelector<HTMLButtonElement>(".mobile-toggle");
+      const mobileNav = document.querySelector<HTMLElement>("#mobile-nav");
+
+      function setMobileNavOpen(isOpen: boolean) {
+        toggle?.setAttribute("aria-expanded", String(isOpen));
+        if (mobileNav) {
+          mobileNav.hidden = !isOpen;
+        }
+        document.documentElement.classList.toggle("mobile-nav-open", isOpen);
+        document.body.classList.toggle("mobile-nav-open", isOpen);
+      }
+
+      toggle?.addEventListener("click", () => {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+
+        setMobileNavOpen(!isOpen);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && toggle?.getAttribute("aria-expanded") === "true") {
+          setMobileNavOpen(false);
+          toggle.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "title": "Architecture",
+  "order": 2,
+  "photos": [
+    {
+      "file": "architecture-01.svg",
+      "slug": "architecture-01",
+      "alt": "Placeholder architecture image with a stepped facade",
+      "caption": "Architecture placeholder 01",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "architecture-02.svg",
+      "slug": "architecture-02",
+      "alt": "Placeholder architecture image with narrow vertical windows",
+      "caption": "Architecture placeholder 02",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "architecture-03.svg",
+      "slug": "architecture-03",
+      "alt": "Placeholder architecture image with a strong diagonal shadow",
+      "caption": "Architecture placeholder 03",
+      "details": "Replace with final caption details."
+    }
+  ]
+}

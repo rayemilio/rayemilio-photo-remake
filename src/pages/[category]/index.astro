@@ -1,0 +1,21 @@
+---
+import GalleryGrid from "../../components/GalleryGrid.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getGalleries } from "../../lib/gallery";
+
+export function getStaticPaths() {
+  return getGalleries().map((gallery) => ({
+    params: { category: gallery.slug },
+    props: { gallery }
+  }));
+}
+
+const { gallery } = Astro.props;
+---
+
+<BaseLayout title={gallery.title} description={`${gallery.title} photography`}>
+  <section class="gallery-page" aria-labelledby="gallery-title">
+    <h1 class="visually-hidden" id="gallery-title">{gallery.title}</h1>
+    <GalleryGrid gallery={gallery} />
+  </section>
+</BaseLayout>

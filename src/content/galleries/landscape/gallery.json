@@ -1,0 +1,27 @@
+{
+  "title": "Landscape",
+  "order": 1,
+  "photos": [
+    {
+      "file": "landscape-01.svg",
+      "slug": "landscape-01",
+      "alt": "Placeholder landscape image with layered horizon forms",
+      "caption": "Landscape placeholder 01",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "landscape-02.svg",
+      "slug": "landscape-02",
+      "alt": "Placeholder landscape image with a vertical ridge shape",
+      "caption": "Landscape placeholder 02",
+      "details": "Replace with final caption details."
+    },
+    {
+      "file": "landscape-03.svg",
+      "slug": "landscape-03",
+      "alt": "Placeholder landscape image with water and distant land forms",
+      "caption": "Landscape placeholder 03",
+      "details": "Replace with final caption details."
+    }
+  ]
+}

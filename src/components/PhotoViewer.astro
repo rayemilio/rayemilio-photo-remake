@@ -1,0 +1,83 @@
+---
+import { Picture } from "astro:assets";
+import type { Gallery, GalleryPhoto } from "../lib/gallery";
+import "../styles/global.css";
+
+type Props = {
+  gallery: Gallery;
+  photo: GalleryPhoto;
+};
+
+const { gallery, photo } = Astro.props;
+const pageTitle = `${photo.caption || photo.slug} | ${gallery.title}`;
+const widths = [640, 960, 1280, 1600, 2200, 2800];
+const sizes = "calc(100vw - 140px)";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={photo.caption || photo.alt || gallery.title} />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="photo-page">
+    <main class="photo-route">
+      <a class="photo-close" href={gallery.href} aria-label={`Close ${photo.caption || photo.slug}`}>
+        <svg class="photo-close-icon" viewBox="0 0 44 44" aria-hidden="true">
+          <path d="M26.668 22L40.77 7.899l2.908-2.908a1.1 1.1 0 000-1.555L40.567.323a1.1 1.1 0 00-1.556 0l-17.01 17.01L4.99.323a1.1 1.1 0 00-1.555 0L.322 3.433a1.1 1.1 0 000 1.556L17.334 22 .322 39.01a1.1 1.1 0 000 1.556l3.111 3.111a1.1 1.1 0 001.556 0L22 26.668 36.103 40.77l2.908 2.908a1.1 1.1 0 001.556 0l3.111-3.111a1.1 1.1 0 000-1.556l-17.01-17.01z"></path>
+        </svg>
+      </a>
+
+      {photo.previousHref && (
+        <a class="photo-arrow photo-arrow-prev" href={photo.previousHref} aria-label="Previous photo">
+          <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
+            <path d="M42.076 80.362l1.285-1.284c.852-.85.852-2.23 0-3.081L7.835 40.5 43.36 5.003c.852-.85.852-2.23 0-3.081L42.076.638a2.182 2.182 0 00-3.084 0L.64 38.96a2.178 2.178 0 000 3.082l38.353 38.32a2.182 2.182 0 003.084 0z"></path>
+          </svg>
+        </a>
+      )}
+
+      {photo.nextHref && (
+        <a class="photo-arrow photo-arrow-next" href={photo.nextHref} aria-label="Next photo">
+          <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
+            <path d="M1.924.638L.639 1.922a2.178 2.178 0 000 3.081L36.165 40.5.64 75.997a2.178 2.178 0 000 3.081l1.285 1.284c.851.85 2.232.85 3.084 0L43.36 42.04a2.178 2.178 0 000-3.082L5.008.64a2.182 2.182 0 00-3.084 0z"></path>
+          </svg>
+        </a>
+      )}
+
+      <figure class="photo-figure">
+        <div class="photo-frame">
+          {photo.isSvg ? (
+            <img
+              src={photo.image.src}
+              width={photo.width}
+              height={photo.height}
+              alt={photo.alt}
+              decoding="async"
+              loading="eager"
+            />
+          ) : (
+            <Picture
+              src={photo.image}
+              widths={widths}
+              formats={["avif", "webp"]}
+              fallbackFormat="jpg"
+              sizes={sizes}
+              alt={photo.alt}
+              loading="eager"
+              decoding="async"
+              quality={90}
+            />
+          )}
+        </div>
+        {(photo.caption || photo.details) && (
+          <figcaption class="photo-caption">
+            {photo.caption && <span>{photo.caption}</span>}
+            {photo.details && <span>{photo.details}</span>}
+          </figcaption>
+        )}
+      </figure>
+    </main>
+  </body>
+</html>

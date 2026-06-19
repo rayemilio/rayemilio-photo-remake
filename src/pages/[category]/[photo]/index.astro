@@ -1,0 +1,23 @@
+---
+import PhotoViewer from "../../../components/PhotoViewer.astro";
+import { getGalleries } from "../../../lib/gallery";
+
+export function getStaticPaths() {
+  return getGalleries().flatMap((gallery) =>
+    gallery.photos.map((photo) => ({
+      params: {
+        category: gallery.slug,
+        photo: photo.slug
+      },
+      props: {
+        gallery,
+        photo
+      }
+    }))
+  );
+}
+
+const { gallery, photo } = Astro.props;
+---
+
+<PhotoViewer gallery={gallery} photo={photo} />
