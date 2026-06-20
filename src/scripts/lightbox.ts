@@ -21,6 +21,15 @@ type LightboxState = {
   depth: number;
 };
 
+type NavigatorConnection = {
+  saveData?: boolean;
+  effectiveType?: string;
+};
+
+type NavigatorWithConnection = Navigator & {
+  connection?: NavigatorConnection;
+};
+
 const previousIcon = `
   <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
     <path d="M42.076 80.362l1.285-1.284c.852-.85.852-2.23 0-3.081L7.835 40.5 43.36 5.003c.852-.85.852-2.23 0-3.081L42.076.638a2.182 2.182 0 00-3.084 0L.64 38.96a2.178 2.178 0 000 3.082l38.353 38.32a2.182 2.182 0 003.084 0z"></path>
@@ -73,7 +82,9 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   let isTransitioning = false;
   let queuedDelta: number | null = null;
   let renderToken = 0;
-  const transitionMs = 180;
+  let preloadRunId = 0;
+  const loadedFullSrcs = new Set<string>();
+  const transitionMs = 360;
 
   function getCurrentItems(): LightboxItem[] {
     return galleries.get(currentGalleryId) ?? [];
@@ -196,6 +207,17 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     });
   }
 
+  function hideFigureImmediately(): void {
+    if (!lightboxFigure) {
+      return;
+    }
+
+    lightboxFigure.style.transition = "none";
+    lightboxFigure.classList.add("photo-viewer-hidden");
+    void lightboxFigure.offsetWidth;
+    lightboxFigure.style.transition = "";
+  }
+
   async function waitForImageLoad(targetImage: HTMLImageElement): Promise<boolean> {
     if (targetImage.complete) {
       await targetImage.decode?.().catch(() => undefined);
@@ -215,6 +237,16 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function shouldWarmFullImages(): boolean {
+    const connection = (navigator as NavigatorWithConnection).connection;
+
+    if (connection?.saveData) {
+      return false;
+    }
+
+    return connection?.effectiveType !== "slow-2g" && connection?.effectiveType !== "2g";
+  }
+
   function setImageDisplayFrame(item: LightboxItem): void {
     if (!image) {
       return;
@@ -224,27 +256,111 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     image.style.width = `${item.width}px`;
   }
 
-  async function promoteFullImage(item: LightboxItem, token: number): Promise<void> {
-    if (!image || item.previewSrc === item.src) {
-      image?.classList.remove("lightbox-image-preview");
+  function createImageLoader(item: LightboxItem, src: string): HTMLImageElement {
+    const nextImage = new Image();
+    nextImage.decoding = "async";
+    nextImage.width = item.width;
+    nextImage.height = item.height;
+    nextImage.alt = item.alt;
+    nextImage.src = src;
+    return nextImage;
+  }
+
+  function commitImage(item: LightboxItem, src: string): void {
+    if (!image) {
       return;
     }
 
-    const fullImage = new Image();
-    fullImage.decoding = "async";
-    fullImage.src = item.src;
-    fullImage.width = item.width;
-    fullImage.height = item.height;
-    fullImage.alt = item.alt;
+    image.width = item.width;
+    image.height = item.height;
+    image.alt = item.alt;
+    setImageDisplayFrame(item);
+    image.src = src;
+  }
 
-    const loaded = await waitForImageLoad(fullImage);
+  async function prepareImageSource(item: LightboxItem, src: string): Promise<boolean> {
+    return waitForImageLoad(createImageLoader(item, src));
+  }
+
+  async function prepareFullImage(item: LightboxItem): Promise<boolean> {
+    if (loadedFullSrcs.has(item.src)) {
+      return true;
+    }
+
+    const loaded = await prepareImageSource(item, item.src);
+
+    if (loaded) {
+      loadedFullSrcs.add(item.src);
+    }
+
+    return loaded;
+  }
+
+  function getWarmQueueIndices(startIndex: number, itemCount: number): number[] {
+    const indices: number[] = [];
+
+    for (let offset = 1; offset < itemCount; offset += 1) {
+      const nextIndex = startIndex + offset;
+      const previousIndex = startIndex - offset;
+
+      if (nextIndex < itemCount) {
+        indices.push(nextIndex);
+      }
+
+      if (previousIndex >= 0) {
+        indices.push(previousIndex);
+      }
+    }
+
+    return indices;
+  }
+
+  function stopFullImageWarmQueue(): void {
+    preloadRunId += 1;
+  }
+
+  async function warmFullImagesFrom(startIndex: number, runId: number): Promise<void> {
+    if (!shouldWarmFullImages()) {
+      return;
+    }
+
+    const items = getCurrentItems();
+
+    for (const index of getWarmQueueIndices(startIndex, items.length)) {
+      if (runId !== preloadRunId || !overlay) {
+        return;
+      }
+
+      const item = items[index];
+
+      if (!item || loadedFullSrcs.has(item.src)) {
+        continue;
+      }
+
+      await prepareFullImage(item);
+    }
+  }
+
+  function startFullImageWarmQueue(startIndex: number): void {
+    stopFullImageWarmQueue();
+
+    const runId = preloadRunId;
+    void warmFullImagesFrom(startIndex, runId);
+  }
+
+  async function promoteFullImage(item: LightboxItem, token: number): Promise<void> {
+    if (!image || item.previewSrc === item.src) {
+      return;
+    }
+
+    const loaded = await prepareFullImage(item);
 
     if (!loaded || token !== renderToken || !image || getCurrentItem()?.href !== item.href) {
       return;
     }
 
     image.src = item.src;
-    image.classList.remove("lightbox-image-preview");
+    startFullImageWarmQueue(currentIndex);
   }
 
   async function render(index: number, shouldPush: boolean): Promise<void> {
@@ -264,28 +380,54 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     isTransitioning = true;
+    stopFullImageWarmQueue();
     const token = renderToken + 1;
     renderToken = token;
     const shouldAnimate = !prefersReducedMotion();
 
     if (shouldAnimate && !isFirstRender) {
-      lightboxFigure.classList.add("photo-viewer-hidden");
-      await waitForFade();
+      hideFigureImmediately();
     }
 
     if (token !== renderToken || !overlay || !image || !lightboxFigure) {
       return;
     }
 
-    if (image) {
-      image.width = item.width;
-      image.height = item.height;
-      image.alt = item.alt;
-      setImageDisplayFrame(item);
-      image.classList.toggle("lightbox-image-preview", item.previewSrc !== item.src);
-      image.src = item.previewSrc;
+    let displaySrc = item.src;
+    let fullReady = loadedFullSrcs.has(item.src);
+
+    if (!fullReady) {
+      const previewLoaded = await prepareImageSource(item, item.previewSrc);
+      displaySrc = item.previewSrc;
+
+      if (previewLoaded && item.previewSrc === item.src) {
+        loadedFullSrcs.add(item.src);
+        fullReady = true;
+      }
+
+      if (token !== renderToken || !overlay || !image || !lightboxFigure) {
+        return;
+      }
+
+      if (!previewLoaded && item.previewSrc !== item.src) {
+        const fullLoaded = await prepareFullImage(item);
+
+        if (token !== renderToken || !overlay || !image || !lightboxFigure) {
+          return;
+        }
+
+        if (fullLoaded) {
+          displaySrc = item.src;
+          fullReady = true;
+        }
+      }
     }
 
+    if (token !== renderToken || !overlay || !image || !lightboxFigure) {
+      return;
+    }
+
+    commitImage(item, displaySrc);
     renderCaption(item);
     setButtonState();
 
@@ -303,7 +445,11 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       );
     }
 
-    void promoteFullImage(item, token);
+    if (fullReady) {
+      startFullImageWarmQueue(currentIndex);
+    } else if (displaySrc !== item.src) {
+      void promoteFullImage(item, token);
+    }
 
     if (shouldAnimate) {
       requestAnimationFrame(() => {
@@ -343,6 +489,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     nextButton = null;
     pointerStartX = null;
     queuedDelta = null;
+    stopFullImageWarmQueue();
     renderToken += 1;
     historyDepth = 0;
     isTransitioning = false;

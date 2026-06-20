@@ -1,0 +1,99 @@
+<link
+    rel="apple-touch-icon"
+    href="https://m2.22slides.com/rayemiliophotography/eclipse-favicon-667.png?s=bee6d029cecf224101abf1af979c1309"
+/>
+
+<style>
+    /* Custom font imports — must be at the top of style tag */
+    @import url("https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700;800;900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap");
+
+    /* Custom font implementation */
+    :root {
+        --font: Karla, sans-serif;
+        --font2: DM Mono, sans-serif;
+        --logo-font: var(--font);
+        --subtitle-font: var(--font);
+        --nav-font: var(--font);
+        --text-font: var(--font2);
+        --heading-font: var(--font);
+    }
+
+    /* Link text formatting */
+    .text__container a {
+        text-decoration: none !important;
+        color: gray !important;
+    }
+
+    /* Password text area section formatting */
+    .password__form input[type="email"],
+    input[type="number"],
+    input[type="password"],
+    input[type="phone"],
+    input[type="submit"],
+    input[type="text"],
+    textarea {
+        font-family: "Karla";
+        font-size: inherit;
+        padding: 10px;
+        border-style: solid;
+        max-width: 250px;
+        border: 1px solid black;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .password__form h3 {
+        display: none;
+    }
+
+    .password__form input:is([type="button"], [type="submit"], [type="reset"]),
+    input[type="file"]::file-selector-button,
+    button {
+        background-color: #f0f0f0;
+    }
+
+    /* Sets cursor to default when navigating photos */
+    .overlay__paging--back,
+    .overlay__paging--next {
+        cursor: default !important;
+    }
+
+    /* Mobile nav menu font size */
+    @media (max-width: 900px) {
+        .nav__link {
+            font-size: calc(var(--nav-size) * 1.1) !important;
+        }
+    }
+
+    /* Captions under photos in mobile */
+    @media (max-width: 800px) {
+        .gallery--stack .gallery__caption {
+            padding-left: 0px !important;
+        }
+    }
+
+    /* Lightbox bg overlay color */
+    :root {
+        --color-overlay: white;
+    }
+
+    /* Selected Text color */
+
+    ::selection {
+        background: #e2e2e2; /* WebKit/Blink Browsers */
+    }
+
+    ::-moz-selection {
+        background: #e2e2e2; /* Gecko Browsers */
+    }
+</style>
+
+<script>
+    // Make external links open in new windows
+    custom = window.custom || {};
+    custom.markup = custom.markup || [];
+    custom.markup.push(() =>
+        document.querySelectorAll('a[href^="http"]').forEach((element) => (element.target = "_blank"))
+    );
+</script>

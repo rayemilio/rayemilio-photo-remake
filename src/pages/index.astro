@@ -9,11 +9,11 @@ const optimizedHomePhoto = await getImage({
   src: homeImage,
   width: Math.min(homeImage.width, 1200),
   format: "webp",
-  quality: 88
+  quality: 82
 });
 ---
 
-<BaseLayout>
+<BaseLayout preloadImage={{ src: optimizedHomePhoto.src }} preloadMono>
   <section class="home-hero" aria-label="Home">
     <div class="home-image">
       <img
@@ -22,6 +22,7 @@ const optimizedHomePhoto = await getImage({
         height={optimizedHomePhoto.attributes.height}
         alt={site.home.alt}
         loading="eager"
+        fetchpriority="high"
         decoding="async"
       />
     </div>

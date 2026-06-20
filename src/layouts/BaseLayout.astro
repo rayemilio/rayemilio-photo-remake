@@ -5,12 +5,19 @@ import "../styles/global.css";
 type Props = {
   title?: string;
   description?: string;
+  preloadImage?: {
+    src: string;
+    type?: string;
+  };
+  preloadMono?: boolean;
 };
 
 const site = getSiteContent();
 const galleries = getGalleries();
 const pageTitle = Astro.props.title ? `${Astro.props.title} | ${site.title}` : site.title;
 const description = Astro.props.description ?? site.description;
+const preloadImage = Astro.props.preloadImage;
+const preloadMono = Astro.props.preloadMono ?? false;
 const pathname = Astro.url.pathname;
 
 function isActive(href: string): boolean {
@@ -29,6 +36,13 @@ function isActive(href: string): boolean {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+    <link rel="preload" href="/fonts/qkBbXvYC6trAT7RVLtyU5rZP.woff2" as="font" type="font/woff2" crossorigin />
+    {preloadMono && (
+      <link rel="preload" href="/fonts/aFTT7PB1QTsUX8KYth-orYadb435dFpHuQ.woff2" as="font" type="font/woff2" crossorigin />
+    )}
+    {preloadImage && (
+      <link rel="preload" href={preloadImage.src} as="image" type={preloadImage.type ?? "image/webp"} fetchpriority="high" />
+    )}
     <title>{pageTitle}</title>
   </head>
   <body>

@@ -38,11 +38,24 @@ picture {
 a {
     color: inherit;
     text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 button {
     color: inherit;
     font: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 1px solid #8a8a8a;
+    outline-offset: 4px;
 }
 
 .visually-hidden {
@@ -406,8 +419,15 @@ button {
     margin: 0;
     min-height: calc(100vh - 116px);
     opacity: 1;
-    transition: opacity 180ms ease;
     width: 100%;
+}
+
+.photo-figure {
+    transition: opacity 180ms ease;
+}
+
+.lightbox-figure {
+    transition: opacity 360ms ease;
 }
 
 .photo-transition-enabled .photo-page .photo-figure,
@@ -460,14 +480,6 @@ button {
     width: auto;
 }
 
-.lightbox-image {
-    transition: filter 120ms ease;
-}
-
-.lightbox-image-preview {
-    filter: blur(16px);
-}
-
 .photo-caption,
 .lightbox-caption {
     color: var(--muted);
@@ -505,6 +517,11 @@ button {
 .photo-arrow:hover,
 .lightbox-side:hover {
     opacity: 1;
+}
+
+.photo-arrow:focus-visible,
+.lightbox-side:focus-visible {
+    outline: none;
 }
 
 .photo-arrow-prev,
@@ -770,9 +787,13 @@ body.mobile-nav-open {
         padding-right: 18px;
     }
 
-    .photo-arrow,
-    .lightbox-side {
+    .photo-arrow {
         display: none;
+    }
+
+    .lightbox-side {
+        display: flex;
+        opacity: 0;
     }
 
     .photo-close,
