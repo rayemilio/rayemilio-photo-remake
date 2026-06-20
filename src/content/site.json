@@ -11,10 +11,17 @@
     "quoteCredit": "-Charles Baudelaire"
   },
   "about": {
-    "heading": "Artist Statement",
+    "heading": "ARTIST STATEMENT:",
+    "quote": "What makes photography a strange invention is that its primary raw materials are light and time.",
+    "quoteCredit": "- John Berger",
     "body": [
-      "Artist statement placeholder. Replace this text with the final statement when it is ready.",
-      "The page layout is in place so copy can be updated without changing the gallery system."
+      "I immerse myself in the realm of analog photography in the pursuit of capturing the feeling and timeless beauty of my environment. The entirely mechanical process — the actuation of the shutter, the springs of the mirror, the refracting of the prism, the alchemy of film reacting chemically with the physical light around me — resonates on a profound level, this tangible engagement with the photographic process an integral aspect that fuels my creativity.",
+      "This chosen medium is a step away from the instantaneous nature of our technological world, constantly beckoning with instant gratification. Shooting with mechanical cameras and film fosters a sense of stillness and presence in the moment — core themes echoed in my work.",
+      "My photographic process requires the deliberate act of slowing down, being attuned to the subtleties of light, place, and technique. I invite viewers into a visual meditation where they can experience narratives of tranquility, beauty, perhaps a touch of melancholy; an otherwise rushing world, momentarily halted in time."
+    ],
+    "contact": [
+      "ray [at] rayemilio [dot] com",
+      "917-740-0729"
     ]
   }
 }
