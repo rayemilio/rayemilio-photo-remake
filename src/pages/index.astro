@@ -1,10 +1,18 @@
 ---
-import { Picture } from "astro:assets";
+import { getImage } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getPhotoByRef, getSiteContent } from "../lib/gallery";
 
 const site = getSiteContent();
 const homePhoto = getPhotoByRef(site.home.photo);
+const optimizedHomePhoto = homePhoto && !homePhoto.isSvg
+  ? await getImage({
+      src: homePhoto.image,
+      width: Math.min(homePhoto.width, 1200),
+      format: "webp",
+      quality: 88
+    })
+  : undefined;
 ---
 
 <BaseLayout>
@@ -21,16 +29,13 @@ const homePhoto = getPhotoByRef(site.home.photo);
             decoding="async"
           />
         ) : (
-          <Picture
-            src={homePhoto.image}
-            widths={[640, 960, 1280, 1600, 2200]}
-            formats={["avif", "webp"]}
-            fallbackFormat="jpg"
-            sizes="(min-width: 960px) calc(100vw - 380px), calc(100vw - 32px)"
+          <img
+            src={optimizedHomePhoto?.src}
+            width={optimizedHomePhoto?.attributes.width}
+            height={optimizedHomePhoto?.attributes.height}
             alt={homePhoto.alt}
             loading="eager"
             decoding="async"
-            quality={88}
           />
         )}
       </a>

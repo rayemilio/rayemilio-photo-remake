@@ -7,7 +7,7 @@ type Props = {
 };
 
 const { gallery } = Astro.props;
-const thumbnailWidths = [320, 480, 720, 960, 1280, 1600];
+const thumbnailWidths = [480, 960, 1280];
 const sizes = "(min-width: 960px) calc((100vw - 330px) / 3), (min-width: 680px) calc((100vw - 72px) / 2), calc(100vw - 32px)";
 
 const lightboxItems = await Promise.all(
@@ -67,7 +67,7 @@ const lightboxItems = await Promise.all(
         <Picture
           src={photo.image}
           widths={thumbnailWidths}
-          formats={["avif", "webp"]}
+          formats={["webp"]}
           fallbackFormat="jpg"
           sizes={sizes}
           alt={photo.alt}
