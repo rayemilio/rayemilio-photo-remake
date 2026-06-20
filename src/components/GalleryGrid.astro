@@ -20,6 +20,14 @@ const lightboxItems = await Promise.all(
           format: "webp",
           quality: 88
         });
+    const preview = photo.isSvg
+      ? { src: photo.image.src }
+      : await getImage({
+          src: photo.image,
+          width: Math.min(photo.width, 80),
+          format: "webp",
+          quality: 24
+        });
 
     return {
       index,
@@ -29,6 +37,7 @@ const lightboxItems = await Promise.all(
       slug: photo.slug,
       href: photo.href,
       src: full.src,
+      previewSrc: preview.src,
       width: photo.width,
       height: photo.height,
       alt: photo.alt,

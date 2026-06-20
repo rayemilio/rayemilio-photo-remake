@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Karla:ital,wght@0,300..800;1,300..800&display=swap");
+@import "./fonts.css";
 
 :root {
     --background: #ffffff;
@@ -460,6 +460,14 @@ button {
     width: auto;
 }
 
+.lightbox-image {
+    transition: filter 120ms ease;
+}
+
+.lightbox-image-preview {
+    filter: blur(16px);
+}
+
 .photo-caption,
 .lightbox-caption {
     color: var(--muted);
@@ -520,6 +528,10 @@ button {
     fill: currentColor;
     height: 20px;
     width: 100px;
+}
+
+.lightbox-side .photo-arrow-icon {
+    display: none;
 }
 
 .lightbox {
@@ -760,22 +772,7 @@ body.mobile-nav-open {
 
     .photo-arrow,
     .lightbox-side {
-        width: 50vw;
-    }
-
-    .photo-arrow-prev,
-    .lightbox-prev {
-        padding-left: 14px;
-    }
-
-    .photo-arrow-next,
-    .lightbox-next {
-        padding-right: 14px;
-    }
-
-    .photo-arrow-icon {
-        height: 17px;
-        width: 76px;
+        display: none;
     }
 
     .photo-close,

@@ -6,6 +6,7 @@ type LightboxItem = {
   slug: string;
   href: string;
   src: string;
+  previewSrc: string;
   width: number;
   height: number;
   alt: string;
@@ -70,6 +71,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   let pointerStartX: number | null = null;
   let previousFocus: Element | null = null;
   let isTransitioning = false;
+  let queuedDelta: number | null = null;
+  let renderToken = 0;
   const transitionMs = 180;
 
   function getCurrentItems(): LightboxItem[] {
@@ -104,14 +107,14 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     previousButton.type = "button";
     previousButton.setAttribute("aria-label", "Previous photo");
     previousButton.innerHTML = previousIcon;
-    previousButton.addEventListener("click", () => moveBy(-1));
+    previousButton.addEventListener("click", () => requestMoveBy(-1));
 
     nextButton = document.createElement("button");
     nextButton.className = "lightbox-side lightbox-next";
     nextButton.type = "button";
     nextButton.setAttribute("aria-label", "Next photo");
     nextButton.innerHTML = nextIcon;
-    nextButton.addEventListener("click", () => moveBy(1));
+    nextButton.addEventListener("click", () => requestMoveBy(1));
 
     lightboxFigure = document.createElement("figure");
     lightboxFigure.className = "lightbox-figure photo-viewer-hidden";
@@ -147,7 +150,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
         return;
       }
 
-      moveBy(delta > 0 ? -1 : 1);
+      requestMoveBy(delta > 0 ? -1 : 1);
     });
 
     document.documentElement.classList.add("lightbox-open");
@@ -193,22 +196,55 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     });
   }
 
-  async function waitForImageLoad(targetImage: HTMLImageElement): Promise<void> {
+  async function waitForImageLoad(targetImage: HTMLImageElement): Promise<boolean> {
     if (targetImage.complete) {
       await targetImage.decode?.().catch(() => undefined);
-      return;
+      return targetImage.naturalWidth > 0;
     }
 
-    await new Promise<void>((resolve) => {
-      targetImage.addEventListener("load", () => resolve(), { once: true });
-      targetImage.addEventListener("error", () => resolve(), { once: true });
+    const loaded = await new Promise<boolean>((resolve) => {
+      targetImage.addEventListener("load", () => resolve(true), { once: true });
+      targetImage.addEventListener("error", () => resolve(false), { once: true });
     });
 
     await targetImage.decode?.().catch(() => undefined);
+    return loaded && targetImage.naturalWidth > 0;
   }
 
   function prefersReducedMotion(): boolean {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function setImageDisplayFrame(item: LightboxItem): void {
+    if (!image) {
+      return;
+    }
+
+    image.style.aspectRatio = `${item.width} / ${item.height}`;
+    image.style.width = `${item.width}px`;
+  }
+
+  async function promoteFullImage(item: LightboxItem, token: number): Promise<void> {
+    if (!image || item.previewSrc === item.src) {
+      image?.classList.remove("lightbox-image-preview");
+      return;
+    }
+
+    const fullImage = new Image();
+    fullImage.decoding = "async";
+    fullImage.src = item.src;
+    fullImage.width = item.width;
+    fullImage.height = item.height;
+    fullImage.alt = item.alt;
+
+    const loaded = await waitForImageLoad(fullImage);
+
+    if (!loaded || token !== renderToken || !image || getCurrentItem()?.href !== item.href) {
+      return;
+    }
+
+    image.src = item.src;
+    image.classList.remove("lightbox-image-preview");
   }
 
   async function render(index: number, shouldPush: boolean): Promise<void> {
@@ -228,6 +264,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     isTransitioning = true;
+    const token = renderToken + 1;
+    renderToken = token;
     const shouldAnimate = !prefersReducedMotion();
 
     if (shouldAnimate && !isFirstRender) {
@@ -235,16 +273,21 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       await waitForFade();
     }
 
+    if (token !== renderToken || !overlay || !image || !lightboxFigure) {
+      return;
+    }
+
     if (image) {
-      image.src = item.src;
       image.width = item.width;
       image.height = item.height;
       image.alt = item.alt;
+      setImageDisplayFrame(item);
+      image.classList.toggle("lightbox-image-preview", item.previewSrc !== item.src);
+      image.src = item.previewSrc;
     }
 
     renderCaption(item);
     setButtonState();
-    await waitForImageLoad(image);
 
     if (shouldPush) {
       historyDepth += 1;
@@ -260,6 +303,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       );
     }
 
+    void promoteFullImage(item, token);
+
     if (shouldAnimate) {
       requestAnimationFrame(() => {
         lightboxFigure?.classList.remove("photo-viewer-hidden");
@@ -270,6 +315,12 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     isTransitioning = false;
+
+    if (queuedDelta !== null) {
+      const delta = queuedDelta;
+      queuedDelta = null;
+      moveBy(delta);
+    }
   }
 
   function open(galleryId: string, index: number): void {
@@ -291,6 +342,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     previousButton = null;
     nextButton = null;
     pointerStartX = null;
+    queuedDelta = null;
+    renderToken += 1;
     historyDepth = 0;
     isTransitioning = false;
     document.documentElement.classList.remove("lightbox-open");
@@ -324,6 +377,15 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     void render(nextIndex, true);
+  }
+
+  function requestMoveBy(delta: number): void {
+    if (isTransitioning) {
+      queuedDelta = delta;
+      return;
+    }
+
+    moveBy(delta);
   }
 
   document.addEventListener("click", (event) => {
@@ -366,12 +428,12 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      moveBy(-1);
+      requestMoveBy(-1);
     }
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      moveBy(1);
+      requestMoveBy(1);
     }
   });
 

@@ -89,6 +89,9 @@ const optimizedPhoto = photo.isSvg
       const transitionMs = 180;
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       const image = document.querySelector<HTMLImageElement>(".photo-frame img");
+      const closeLink = document.querySelector<HTMLAnchorElement>(".photo-close");
+      const previousLink = document.querySelector<HTMLAnchorElement>(".photo-arrow-prev");
+      const nextLink = document.querySelector<HTMLAnchorElement>(".photo-arrow-next");
 
       async function waitForPhotoImage() {
         if (!image) {
@@ -123,6 +126,30 @@ const optimizedPhoto = photo.isSvg
 
       let isNavigating = false;
 
+      async function navigateTo(url: string) {
+        if (isNavigating) {
+          return;
+        }
+
+        isNavigating = true;
+        document.body.classList.add("photo-leaving");
+
+        if (!reduceMotion.matches) {
+          await waitForFadeOut();
+        }
+
+        window.location.href = url;
+      }
+
+      closeLink?.addEventListener("click", async (event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          return;
+        }
+
+        event.preventDefault();
+        await navigateTo(closeLink.href);
+      });
+
       document.querySelectorAll<HTMLAnchorElement>(".photo-arrow").forEach((link) => {
         link.addEventListener("click", async (event) => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || isNavigating) {
@@ -130,15 +157,29 @@ const optimizedPhoto = photo.isSvg
           }
 
           event.preventDefault();
-          isNavigating = true;
-          document.body.classList.add("photo-leaving");
-
-          if (!reduceMotion.matches) {
-            await waitForFadeOut();
-          }
-
-          window.location.href = link.href;
+          await navigateTo(link.href);
         });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || isNavigating) {
+          return;
+        }
+
+        if (event.key === "Escape" && closeLink) {
+          event.preventDefault();
+          void navigateTo(closeLink.href);
+        }
+
+        if (event.key === "ArrowLeft" && previousLink) {
+          event.preventDefault();
+          void navigateTo(previousLink.href);
+        }
+
+        if (event.key === "ArrowRight" && nextLink) {
+          event.preventDefault();
+          void navigateTo(nextLink.href);
+        }
       });
     </script>
   </body>
