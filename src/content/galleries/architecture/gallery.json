@@ -1,104 +1,111 @@
 {
-  "title": "Architecture",
-  "order": 2,
-  "photos": [
-    {
-      "file": "aa016-136.jpg",
-      "slug": "aa016-136",
-      "alt": "Architecture photograph made in New York City.",
-      "caption": "nyc, ny",
-      "details": "yashica t4 + lomography lady grey 400"
-    },
-    {
-      "file": "aa019-512.jpg",
-      "slug": "aa019-512",
-      "alt": "Architecture photograph made in Manhattan Beach, California.",
-      "caption": "manhattan beach, ca",
-      "details": "nikon fe2 + kodak portra 160"
-    },
-    {
-      "file": "000588910007-578.jpg",
-      "slug": "000588910007-578",
-      "alt": "Architecture photograph made in Erice, Italy.",
-      "caption": "erice, italy",
-      "details": "nikon f2 + fuji natura 1600"
-    },
-    {
-      "file": "bw45921-1-0021-826.jpg",
-      "slug": "bw45921-1-0021-826",
-      "alt": "Architecture photograph of The Getty in Los Angeles, California.",
-      "caption": "the getty - los angeles, ca",
-      "details": "nikon f2 + rollei 400"
-    },
-    {
-      "file": "dsc-5691-3-cropped-196.jpg",
-      "slug": "dsc-5691-3-cropped-196",
-      "alt": "Architecture photograph made in Hollywood, California.",
-      "caption": "hollywood, ca",
-      "details": "nikon d7000"
-    },
-    {
-      "file": "valvasone-italy-782.jpg",
-      "slug": "valvasone-italy-782",
-      "alt": "Architecture photograph made in Valvasone, Italy.",
-      "caption": "valvasone, italy",
-      "details": "nikon f2 + cinestill 50d"
-    },
-    {
-      "file": "scotland-fuji-superia-400-332.jpg",
-      "slug": "scotland-fuji-superia-400-332",
-      "alt": "Architecture photograph made on the Isle of Skye, Scotland.",
-      "caption": "isle of skye, scotland",
-      "details": "nikon f2 + fuji superia xtra 400"
-    },
-    {
-      "file": "chamonix-france-601.jpg",
-      "slug": "chamonix-france-601",
-      "alt": "Architecture photograph made in Chamonix, France.",
-      "caption": "chamonix, france",
-      "details": "nikon f2 + kodak gold 200"
-    },
-    {
-      "file": "royal-palace-amsterdam-895.jpg",
-      "slug": "royal-palace-amsterdam-895",
-      "alt": "Architecture photograph of the Royal Palace in Amsterdam, Netherlands.",
-      "caption": "royal palace - amsterdam, netherlands",
-      "details": "nikon f2 + fuji natura 1600"
-    },
-    {
-      "file": "000332820033-191.jpg",
-      "slug": "000332820033-191",
-      "alt": "Architecture photograph of Broadway Tower in the Cotswolds, England.",
-      "caption": "broadway tower - cotswolds, england",
-      "details": "olympus trip 35 + fuji 200"
-    },
-    {
-      "file": "000332820034-786.jpg",
-      "slug": "000332820034-786",
-      "alt": "Architecture photograph of Broadway Tower in the Cotswolds, England.",
-      "caption": "broadway tower - cotswolds, england",
-      "details": "olympus trip 35 + fuji 200"
-    },
-    {
-      "file": "000332820005-803.jpg",
-      "slug": "000332820005-803",
-      "alt": "Architecture photograph of a bus stop in the Cotswolds, England.",
-      "caption": "bus stop - cotswolds, england",
-      "details": "olympus trip 35 + fuji 200"
-    },
-    {
-      "file": "000265810021-617.jpg",
-      "slug": "000265810021-617",
-      "alt": "Architecture photograph made in Edinburgh, Scotland.",
-      "caption": "edinburgh, scotland",
-      "details": "olympus trip 35 + kodak gold 200"
-    },
-    {
-      "file": "739344010005-949.jpg",
-      "slug": "739344010005-949",
-      "alt": "Architecture photograph of a shed in Ojai, California.",
-      "caption": "shed - ojai, ca",
-      "details": "nikon f2 + flic aurora 800"
-    }
-  ]
+    "title": "Architecture",
+    "order": 2,
+    "photos": [
+        {
+            "file": "aa016-136.jpg",
+            "slug": "aa016-136",
+            "alt": "Architecture photograph made in New York City.",
+            "caption": "nyc, ny",
+            "details": "yashica t4 + lomography lady grey 400"
+        },
+        {
+            "file": "aa019-512.jpg",
+            "slug": "aa019-512",
+            "alt": "Architecture photograph made in Manhattan Beach, California.",
+            "caption": "manhattan beach, ca",
+            "details": "nikon fe2 + kodak portra 160"
+        },
+        {
+            "file": "000588910007-578.jpg",
+            "slug": "000588910007-578",
+            "alt": "Architecture photograph made in Erice, Italy.",
+            "caption": "erice, italy",
+            "details": "nikon f2 + fuji natura 1600"
+        },
+        {
+            "file": "bw45921-1-0021-826.jpg",
+            "slug": "bw45921-1-0021-826",
+            "alt": "Architecture photograph of The Getty in Los Angeles, California.",
+            "caption": "the getty - los angeles, ca",
+            "details": "nikon f2 + rollei 400"
+        },
+        {
+            "file": "dsc-5691-3-cropped-196.jpg",
+            "slug": "dsc-5691-3-cropped-196",
+            "alt": "Architecture photograph made in Hollywood, California.",
+            "caption": "hollywood, ca",
+            "details": "nikon d7000"
+        },
+        {
+            "file": "valvasone-italy-782.jpg",
+            "slug": "valvasone-italy-782",
+            "alt": "Architecture photograph made in Valvasone, Italy.",
+            "caption": "valvasone, italy",
+            "details": "nikon f2 + cinestill 50d"
+        },
+        {
+            "file": "scotland-fuji-superia-400-332.jpg",
+            "slug": "scotland-fuji-superia-400-332",
+            "alt": "Architecture photograph made on the Isle of Skye, Scotland.",
+            "caption": "isle of skye, scotland",
+            "details": "nikon f2 + fuji superia xtra 400"
+        },
+        {
+            "file": "chamonix-france-601.jpg",
+            "slug": "chamonix-france-601",
+            "alt": "Architecture photograph made in Chamonix, France.",
+            "caption": "chamonix, france",
+            "details": "nikon f2 + kodak gold 200"
+        },
+        {
+            "file": "royal-palace-amsterdam-895.jpg",
+            "slug": "royal-palace-amsterdam-895",
+            "alt": "Architecture photograph of the Royal Palace in Amsterdam, Netherlands.",
+            "caption": "royal palace - amsterdam, netherlands",
+            "details": "nikon f2 + fuji natura 1600"
+        },
+        {
+            "file": "000332820033-191.jpg",
+            "slug": "000332820033-191",
+            "alt": "Architecture photograph of Broadway Tower in the Cotswolds, England.",
+            "caption": "broadway tower - cotswolds, england",
+            "details": "olympus trip 35 + fuji 200"
+        },
+        {
+            "file": "000332820034-786.jpg",
+            "slug": "000332820034-786",
+            "alt": "Architecture photograph of Broadway Tower in the Cotswolds, England.",
+            "caption": "broadway tower - cotswolds, england",
+            "details": "olympus trip 35 + fuji 200"
+        },
+        {
+            "file": "000332820005-803.jpg",
+            "slug": "000332820005-803",
+            "alt": "Architecture photograph of a bus stop in the Cotswolds, England.",
+            "caption": "bus stop - cotswolds, england",
+            "details": "olympus trip 35 + fuji 200"
+        },
+        {
+            "file": "000265810021-617.jpg",
+            "slug": "000265810021-617",
+            "alt": "Architecture photograph made in Edinburgh, Scotland.",
+            "caption": "edinburgh, scotland",
+            "details": "olympus trip 35 + kodak gold 200"
+        },
+        {
+            "file": "739344010005-949.jpg",
+            "slug": "739344010005-949",
+            "alt": "Architecture photograph of a shed in Ojai, California.",
+            "caption": "shed - ojai, ca",
+            "details": "nikon f2 + flic aurora 800"
+        },
+        {
+            "file": "739344010016.jpg",
+            "slug": "739344010016.jpg",
+            "alt": "Architecture photograph of Queen Anne's Cottage.",
+            "caption": "queen anne cottage - arcadia, ca",
+            "details": "nikon f2 + flic aurora 800"
+        }
+    ]
 }
