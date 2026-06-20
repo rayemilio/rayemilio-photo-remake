@@ -3,25 +3,67 @@
   "order": 3,
   "photos": [
     {
-      "file": "subject-01.svg",
-      "slug": "subject-01",
-      "alt": "Placeholder subject image with a seated silhouette",
-      "caption": "Subject placeholder 01",
-      "details": "Replace with final caption details."
+      "file": "dsc-8078-edit-482.jpg",
+      "slug": "dsc-8078-edit-482",
+      "alt": "Subject photograph with a typewriter and text by Henry Van Dyke, made in Queens, New York.",
+      "caption": "queens, ny",
+      "details": "typewriter & nikon d7000, words by henry van dyke"
     },
     {
-      "file": "subject-02.svg",
-      "slug": "subject-02",
-      "alt": "Placeholder subject image with a standing silhouette",
-      "caption": "Subject placeholder 02",
-      "details": "Replace with final caption details."
+      "file": "statue-light-892.jpeg",
+      "slug": "statue-light-892",
+      "alt": "Subject photograph made at The Getty in Malibu, California.",
+      "caption": "the getty - malibu, ca",
+      "details": "lenka app"
     },
     {
-      "file": "subject-03.svg",
-      "slug": "subject-03",
-      "alt": "Placeholder subject image with a close portrait silhouette",
-      "caption": "Subject placeholder 03",
-      "details": "Replace with final caption details."
+      "file": "italy-fuji-natura-1600-250.jpg",
+      "slug": "italy-fuji-natura-1600-250",
+      "alt": "Subject photograph at Piazza Pretoria in Palermo, Italy.",
+      "caption": "piazza pretoria (square of shame) - palermo, italy",
+      "details": "nikon f2 + fuji natura 1600"
+    },
+    {
+      "file": "000332820025-720.jpg",
+      "slug": "000332820025-720",
+      "alt": "Subject photograph made in the Cotswolds, England.",
+      "caption": "cotswolds, england",
+      "details": "olympus trip 35 + fuji 200"
+    },
+    {
+      "file": "dscf0905-orig-156.jpg",
+      "slug": "dscf0905-orig-156",
+      "alt": "Subject photograph at a park fair in the Cotswolds, England.",
+      "caption": "park fair - cotswolds, england",
+      "details": "fuji x100t"
+    },
+    {
+      "file": "aa034-edit-216.jpg",
+      "slug": "aa034-edit-216",
+      "alt": "Subject photograph made at Queens County Farm in Queens, New York.",
+      "caption": "queens county farm - queens, ny",
+      "details": "nikon fe2 + kodak portra 160"
+    },
+    {
+      "file": "raw0020-529.jpg",
+      "slug": "raw0020-529",
+      "alt": "Subject photograph made in Los Angeles, California.",
+      "caption": "los angeles, ca",
+      "details": "olympus mju-ii + kodak gold 200 (expired)"
+    },
+    {
+      "file": "000054400005-299.jpg",
+      "slug": "000054400005-299",
+      "alt": "Subject photograph made in Manhattan, New York.",
+      "caption": "manhattan, ny",
+      "details": "nikon f2 + fuji natura 1600"
+    },
+    {
+      "file": "aa028a-813.jpg",
+      "slug": "aa028a-813",
+      "alt": "Subject photograph made in Asbury Park, New Jersey.",
+      "caption": "asbury park, nj",
+      "details": "olympus mju-ii + fuji c200"
     }
   ]
 }

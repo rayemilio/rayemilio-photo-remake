@@ -60,6 +60,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
   let overlay: HTMLDivElement | null = null;
   let image: HTMLImageElement | null = null;
+  let lightboxFigure: HTMLElement | null = null;
   let caption: HTMLElement | null = null;
   let previousButton: HTMLButtonElement | null = null;
   let nextButton: HTMLButtonElement | null = null;
@@ -68,6 +69,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   let historyDepth = 0;
   let pointerStartX: number | null = null;
   let previousFocus: Element | null = null;
+  let isTransitioning = false;
+  const transitionMs = 180;
 
   function getCurrentItems(): LightboxItem[] {
     return galleries.get(currentGalleryId) ?? [];
@@ -110,8 +113,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     nextButton.innerHTML = nextIcon;
     nextButton.addEventListener("click", () => moveBy(1));
 
-    const figure = document.createElement("figure");
-    figure.className = "lightbox-figure";
+    lightboxFigure = document.createElement("figure");
+    lightboxFigure.className = "lightbox-figure photo-viewer-hidden";
 
     const frame = document.createElement("div");
     frame.className = "lightbox-frame";
@@ -124,8 +127,8 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     caption.className = "lightbox-caption";
 
     frame.append(image);
-    figure.append(frame, caption);
-    overlay.append(close, previousButton, nextButton, figure);
+    lightboxFigure.append(frame, caption);
+    overlay.append(close, previousButton, nextButton, lightboxFigure);
     document.body.append(overlay);
 
     overlay.addEventListener("pointerdown", (event) => {
@@ -184,16 +187,53 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
   }
 
-  function render(index: number, shouldPush: boolean): void {
-    const items = getCurrentItems();
-    const item = items[index];
+  function waitForFade(): Promise<void> {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, transitionMs);
+    });
+  }
 
-    if (!item) {
+  async function waitForImageLoad(targetImage: HTMLImageElement): Promise<void> {
+    if (targetImage.complete) {
+      await targetImage.decode?.().catch(() => undefined);
       return;
     }
 
+    await new Promise<void>((resolve) => {
+      targetImage.addEventListener("load", () => resolve(), { once: true });
+      targetImage.addEventListener("error", () => resolve(), { once: true });
+    });
+
+    await targetImage.decode?.().catch(() => undefined);
+  }
+
+  function prefersReducedMotion(): boolean {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  async function render(index: number, shouldPush: boolean): Promise<void> {
+    const items = getCurrentItems();
+    const item = items[index];
+
+    if (!item || isTransitioning) {
+      return;
+    }
+
+    const isFirstRender = !overlay;
     currentIndex = index;
     createOverlay();
+
+    if (!image || !lightboxFigure) {
+      return;
+    }
+
+    isTransitioning = true;
+    const shouldAnimate = !prefersReducedMotion();
+
+    if (shouldAnimate && !isFirstRender) {
+      lightboxFigure.classList.add("photo-viewer-hidden");
+      await waitForFade();
+    }
 
     if (image) {
       image.src = item.src;
@@ -204,6 +244,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
     renderCaption(item);
     setButtonState();
+    await waitForImageLoad(image);
 
     if (shouldPush) {
       historyDepth += 1;
@@ -218,6 +259,17 @@ if (!runtimeWindow.__photoLightboxInitialized) {
         item.href
       );
     }
+
+    if (shouldAnimate) {
+      requestAnimationFrame(() => {
+        lightboxFigure?.classList.remove("photo-viewer-hidden");
+      });
+      await waitForFade();
+    } else {
+      lightboxFigure.classList.remove("photo-viewer-hidden");
+    }
+
+    isTransitioning = false;
   }
 
   function open(galleryId: string, index: number): void {
@@ -227,18 +279,20 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
     currentGalleryId = galleryId;
     historyDepth = 0;
-    render(index, true);
+    void render(index, true);
   }
 
   function closeOverlay(): void {
     overlay?.remove();
     overlay = null;
     image = null;
+    lightboxFigure = null;
     caption = null;
     previousButton = null;
     nextButton = null;
     pointerStartX = null;
     historyDepth = 0;
+    isTransitioning = false;
     document.documentElement.classList.remove("lightbox-open");
     document.body.classList.remove("lightbox-open");
 
@@ -258,6 +312,10 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   }
 
   function moveBy(delta: number): void {
+    if (isTransitioning) {
+      return;
+    }
+
     const items = getCurrentItems();
     const nextIndex = currentIndex + delta;
 
@@ -265,7 +323,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       return;
     }
 
-    render(nextIndex, true);
+    void render(nextIndex, true);
   }
 
   document.addEventListener("click", (event) => {
@@ -323,7 +381,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     if (state?.photoLightbox && galleries.has(state.galleryId)) {
       currentGalleryId = state.galleryId;
       historyDepth = state.depth;
-      render(state.index, false);
+      void render(state.index, false);
       return;
     }
 

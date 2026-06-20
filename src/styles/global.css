@@ -148,7 +148,11 @@ button {
 }
 
 .home-image {
+    cursor: default;
     display: block;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
     width: min(420px, 100%);
 }
 
@@ -158,6 +162,10 @@ button {
     height: auto;
     max-height: 700px;
     object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
     width: 100%;
 }
 
@@ -252,15 +260,30 @@ button {
     padding-top: 12px;
 }
 
-.about-page {
+.artist-statement-page {
     color: var(--muted);
     font-family: var(--mono);
     max-width: 700px;
     padding-top: 0;
 }
 
-.about-photo-slot:empty {
-    display: none;
+.artist-statement-photo {
+    cursor: default;
+    margin: 0 0 56px;
+    max-width: 420px;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.artist-statement-photo img {
+    display: block;
+    height: auto;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    width: 100%;
 }
 
 .text-page p {
@@ -270,7 +293,7 @@ button {
     margin: 28px 0 0;
 }
 
-.about-page h1 {
+.artist-statement-page h1 {
     color: var(--muted);
     font-size: 15px;
     font-weight: 300;
@@ -280,36 +303,36 @@ button {
     text-transform: none;
 }
 
-.about-page blockquote {
+.artist-statement-page blockquote {
     font-style: italic;
     margin: 0 0 34px;
 }
 
-.about-page blockquote p,
-.about-page blockquote cite,
-.about-body p,
-.about-contact span {
+.artist-statement-page blockquote p,
+.artist-statement-page blockquote cite,
+.artist-statement-body p,
+.artist-statement-contact span {
     color: var(--muted);
     font-size: 15px;
     font-weight: 300;
     line-height: 1.6;
 }
 
-.about-page blockquote p {
+.artist-statement-page blockquote p {
     margin: 0;
 }
 
-.about-page blockquote cite {
+.artist-statement-page blockquote cite {
     display: block;
     font-style: italic;
     margin-top: 0;
 }
 
-.about-body p {
+.artist-statement-body p {
     margin: 0 0 24px;
 }
 
-.about-contact {
+.artist-statement-contact {
     display: flex;
     flex-direction: column;
     font-style: normal;
@@ -317,7 +340,7 @@ button {
     margin-top: 36px;
 }
 
-.about-contact span {
+.artist-statement-contact span {
     display: block;
 }
 
@@ -382,7 +405,34 @@ button {
     justify-content: center;
     margin: 0;
     min-height: calc(100vh - 116px);
+    opacity: 1;
+    transition: opacity 180ms ease;
     width: 100%;
+}
+
+.photo-transition-enabled .photo-page .photo-figure,
+.lightbox-figure.photo-viewer-hidden {
+    opacity: 0;
+}
+
+.photo-transition-enabled .photo-page.photo-ready .photo-figure {
+    opacity: 1;
+}
+
+.photo-transition-enabled .photo-page.photo-leaving .photo-figure {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .photo-figure,
+    .lightbox-figure {
+        transition: none;
+    }
+
+    .photo-transition-enabled .photo-page .photo-figure,
+    .lightbox-figure.photo-viewer-hidden {
+        opacity: 1;
+    }
 }
 
 .photo-frame,

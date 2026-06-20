@@ -27,6 +27,9 @@ const optimizedPhoto = photo.isSvg
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={photo.caption || photo.alt || gallery.title} />
     <title>{pageTitle}</title>
+    <script is:inline>
+      document.documentElement.classList.add("photo-transition-enabled");
+    </script>
   </head>
   <body class="photo-page">
     <main class="photo-route">
@@ -82,5 +85,61 @@ const optimizedPhoto = photo.isSvg
         )}
       </figure>
     </main>
+    <script>
+      const transitionMs = 180;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const image = document.querySelector<HTMLImageElement>(".photo-frame img");
+
+      async function waitForPhotoImage() {
+        if (!image) {
+          return;
+        }
+
+        if (image.complete) {
+          await image.decode?.().catch(() => undefined);
+          return;
+        }
+
+        await new Promise<void>((resolve) => {
+          image.addEventListener("load", () => resolve(), { once: true });
+          image.addEventListener("error", () => resolve(), { once: true });
+        });
+      }
+
+      function waitForFadeOut() {
+        return new Promise<void>((resolve) => {
+          window.setTimeout(resolve, transitionMs);
+        });
+      }
+
+      async function revealPhoto() {
+        await waitForPhotoImage();
+        requestAnimationFrame(() => {
+          document.body.classList.add("photo-ready");
+        });
+      }
+
+      revealPhoto();
+
+      let isNavigating = false;
+
+      document.querySelectorAll<HTMLAnchorElement>(".photo-arrow").forEach((link) => {
+        link.addEventListener("click", async (event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || isNavigating) {
+            return;
+          }
+
+          event.preventDefault();
+          isNavigating = true;
+          document.body.classList.add("photo-leaving");
+
+          if (!reduceMotion.matches) {
+            await waitForFadeOut();
+          }
+
+          window.location.href = link.href;
+        });
+      });
+    </script>
   </body>
 </html>

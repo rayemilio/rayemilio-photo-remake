@@ -1,0 +1,40 @@
+---
+import { getImage } from "astro:assets";
+import artistStatementPhoto from "../assets/artist-statement-photo.jpg";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getSiteContent } from "../lib/gallery";
+
+const site = getSiteContent();
+const optimizedArtistStatementPhoto = await getImage({
+  src: artistStatementPhoto,
+  width: Math.min(artistStatementPhoto.width, 900),
+  format: "webp",
+  quality: 88
+});
+---
+
+<BaseLayout title="Artist Statement" description={site.description}>
+  <article class="artist-statement-page">
+    <figure class="artist-statement-photo">
+      <img
+        src={optimizedArtistStatementPhoto.src}
+        width={optimizedArtistStatementPhoto.attributes.width}
+        height={optimizedArtistStatementPhoto.attributes.height}
+        alt={site.artistStatement.photoAlt}
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
+    <h1>{site.artistStatement.heading}</h1>
+    <blockquote>
+      <p>“{site.artistStatement.quote}”</p>
+      <cite>{site.artistStatement.quoteCredit}</cite>
+    </blockquote>
+    <div class="artist-statement-body">
+      {site.artistStatement.body.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <address class="artist-statement-contact">
+      {site.artistStatement.contact.map((line) => <span>{line}</span>)}
+    </address>
+  </article>
+</BaseLayout>

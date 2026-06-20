@@ -28,6 +28,7 @@ function isActive(href: string): boolean {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
     <title>{pageTitle}</title>
   </head>
   <body>
@@ -43,8 +44,8 @@ function isActive(href: string): boolean {
               {gallery.title.toLowerCase()}
             </a>
           ))}
-          <a class:list={{ active: isActive("/about/") }} href="/about/">artist statement</a>
-          <a class:list={{ active: isActive("/prints/") }} href="/prints/">buy prints</a>
+          <a class:list={{ active: isActive("/artist-statement/") }} href="/artist-statement/">artist statement</a>
+          <a href="https://rayemilio.darkroom.com/" target="_blank" rel="noopener noreferrer">buy prints</a>
         </nav>
       </aside>
 
@@ -65,8 +66,8 @@ function isActive(href: string): boolean {
             {gallery.title.toLowerCase()}
           </a>
         ))}
-        <a class:list={{ active: isActive("/about/") }} href="/about/">artist statement</a>
-        <a class:list={{ active: isActive("/prints/") }} href="/prints/">buy prints</a>
+        <a class:list={{ active: isActive("/artist-statement/") }} href="/artist-statement/">artist statement</a>
+        <a href="https://rayemilio.darkroom.com/" target="_blank" rel="noopener noreferrer">buy prints</a>
       </nav>
 
       <main class="site-main">

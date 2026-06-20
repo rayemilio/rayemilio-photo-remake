@@ -1,45 +1,30 @@
 ---
 import { getImage } from "astro:assets";
+import homeImage from "../assets/home-statue-light.jpeg";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getPhotoByRef, getSiteContent } from "../lib/gallery";
+import { getSiteContent } from "../lib/gallery";
 
 const site = getSiteContent();
-const homePhoto = getPhotoByRef(site.home.photo);
-const optimizedHomePhoto = homePhoto && !homePhoto.isSvg
-  ? await getImage({
-      src: homePhoto.image,
-      width: Math.min(homePhoto.width, 1200),
-      format: "webp",
-      quality: 88
-    })
-  : undefined;
+const optimizedHomePhoto = await getImage({
+  src: homeImage,
+  width: Math.min(homeImage.width, 1200),
+  format: "webp",
+  quality: 88
+});
 ---
 
 <BaseLayout>
   <section class="home-hero" aria-label="Home">
-    {homePhoto && (
-      <a class="home-image" href={homePhoto.href}>
-        {homePhoto.isSvg ? (
-          <img
-            src={homePhoto.image.src}
-            width={homePhoto.width}
-            height={homePhoto.height}
-            alt={homePhoto.alt}
-            loading="eager"
-            decoding="async"
-          />
-        ) : (
-          <img
-            src={optimizedHomePhoto?.src}
-            width={optimizedHomePhoto?.attributes.width}
-            height={optimizedHomePhoto?.attributes.height}
-            alt={homePhoto.alt}
-            loading="eager"
-            decoding="async"
-          />
-        )}
-      </a>
-    )}
+    <div class="home-image">
+      <img
+        src={optimizedHomePhoto.src}
+        width={optimizedHomePhoto.attributes.width}
+        height={optimizedHomePhoto.attributes.height}
+        alt={site.home.alt}
+        loading="eager"
+        decoding="async"
+      />
+    </div>
 
     <blockquote class="home-quote">
       <p>{site.home.quote}</p>
