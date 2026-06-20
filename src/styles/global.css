@@ -696,11 +696,12 @@ body.mobile-nav-open {
         padding: calc(var(--mobile-header-height) + 28px) 16px 48px;
     }
 
-    .home-image {
+    .home-image,
+    .artist-statement-photo {
         margin-left: -16px;
         margin-right: -16px;
         max-width: none;
-        width: 100vw;
+        width: calc(100% + 32px);
     }
 
     .home-quote p,
