@@ -254,7 +254,7 @@ button {
 
 .about-page {
     color: var(--muted);
-    font-family: var(--nav-font);
+    font-family: var(--mono);
     max-width: 700px;
     padding-top: 0;
 }
@@ -273,7 +273,7 @@ button {
 .about-page h1 {
     color: var(--muted);
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 300;
     letter-spacing: 0;
     line-height: 1.45;
     margin: 0 0 32px;
