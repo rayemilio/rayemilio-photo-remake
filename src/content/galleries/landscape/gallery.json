@@ -3,25 +3,123 @@
   "order": 1,
   "photos": [
     {
-      "file": "landscape-01.svg",
-      "slug": "landscape-01",
-      "alt": "Placeholder landscape image with layered horizon forms",
-      "caption": "Landscape placeholder 01",
-      "details": "Replace with final caption details."
+      "file": "aa018-733.jpg",
+      "slug": "aa018-733",
+      "alt": "Landscape photograph made in Los Angeles, California.",
+      "caption": "Los Angeles, CA",
+      "details": "Nikon FE2 + Kodak Portra 400"
     },
     {
-      "file": "landscape-02.svg",
-      "slug": "landscape-02",
-      "alt": "Placeholder landscape image with a vertical ridge shape",
-      "caption": "Landscape placeholder 02",
-      "details": "Replace with final caption details."
+      "file": "aa031-602.jpg",
+      "slug": "aa031-602",
+      "alt": "Landscape photograph made in Los Angeles, California.",
+      "caption": "Los Angeles, CA",
+      "details": "Yashica T4 + Lomography 400"
     },
     {
-      "file": "landscape-03.svg",
-      "slug": "landscape-03",
-      "alt": "Placeholder landscape image with water and distant land forms",
-      "caption": "Landscape placeholder 03",
-      "details": "Replace with final caption details."
+      "file": "lochness-fuji-superia-400-559.jpg",
+      "slug": "lochness-fuji-superia-400-559",
+      "alt": "Landscape photograph of Loch Ness near Inverness, Scotland.",
+      "caption": "Loch Ness - Inverness, Scotland",
+      "details": "Nikon F2 + Fuji Superia X-Tra 400"
+    },
+    {
+      "file": "cotswolds-uk-2-881.jpg",
+      "slug": "cotswolds-uk-2-881",
+      "alt": "Landscape photograph made in the Cotswolds, England.",
+      "caption": "Cotswolds, England",
+      "details": "Nikon F2 + Fuji Superia 400"
+    },
+    {
+      "file": "isle-of-skye-206.jpg",
+      "slug": "isle-of-skye-206",
+      "alt": "Landscape photograph made on the Isle of Skye, Scotland.",
+      "caption": "Isle of Skye, Scotland",
+      "details": "Nikon F2 + Fuji Superia 400"
+    },
+    {
+      "file": "erice-sicily-fuji-natura-1600-415.jpg",
+      "slug": "erice-sicily-fuji-natura-1600-415",
+      "alt": "Landscape photograph made in Erice, Italy.",
+      "caption": "Erice, Italy",
+      "details": "Nikon F2 + Fuji Natura 1600"
+    },
+    {
+      "file": "000352600028-cropped-212.jpg",
+      "slug": "000352600028-cropped-212",
+      "alt": "Landscape photograph made in Brighton, England.",
+      "caption": "Brighton, England",
+      "details": "Nikon F2 + Fuji Superia 400"
+    },
+    {
+      "file": "cotswolds-uk-987.jpg",
+      "slug": "cotswolds-uk-987",
+      "alt": "Landscape photograph made in the Cotswolds, England.",
+      "caption": "Cotswolds, England",
+      "details": "Nikon F2 + Fuji Superia X-Tra 400"
+    },
+    {
+      "file": "isle-of-skye-fuji-superia-400-608.jpg",
+      "slug": "isle-of-skye-fuji-superia-400-608",
+      "alt": "Landscape photograph made on the Isle of Skye, Scotland.",
+      "caption": "Isle of Skye, Scotland",
+      "details": "Nikon F2 + Fuji Superia X-Tra 400"
+    },
+    {
+      "file": "file0345-948.jpg",
+      "slug": "file0345-948",
+      "alt": "Landscape photograph made in Uvita, Costa Rica.",
+      "caption": "Uvita, Costa Rica",
+      "details": "Fuji X100T"
+    },
+    {
+      "file": "dsc0015-847.jpg",
+      "slug": "dsc0015-847",
+      "alt": "Landscape photograph made in Opatija, Croatia.",
+      "caption": "Opatija, Croatia",
+      "details": "Nikon D5300"
+    },
+    {
+      "file": "dscf1172-458.jpg",
+      "slug": "dscf1172-458",
+      "alt": "Landscape photograph of the Glenfinnan Viaduct near Inverness, Scotland.",
+      "caption": "Glenfinnan Viaduct - Inverness, Scotland",
+      "details": "Fuji X100T"
+    },
+    {
+      "file": "000352590030-237.jpg",
+      "slug": "000352590030-237",
+      "alt": "Landscape photograph made in Inverness, Scotland.",
+      "caption": "Inverness, Scotland",
+      "details": "Olympus mju II + Fuji Superia Premium 400"
+    },
+    {
+      "file": "000265810007-119.jpg",
+      "slug": "000265810007-119",
+      "alt": "Landscape photograph made in Tintagel, England.",
+      "caption": "Tintagel, England",
+      "details": "Olympus Trip 35 + Kodak Gold 200"
+    },
+    {
+      "file": "000265810004-142.jpg",
+      "slug": "000265810004-142",
+      "alt": "Landscape photograph made in Tintagel, England.",
+      "caption": "Tintagel, England",
+      "details": "Olympus Trip 35 + Kodak Gold 200"
+    },
+    {
+      "file": "000074060027-781.jpg",
+      "slug": "000074060027-781",
+      "alt": "Landscape photograph made in the Cotswolds, England.",
+      "caption": "Cotswolds, England",
+      "details": "Olympus Trip 35 + Kodak Vision3 250D"
+    },
+    {
+      "file": "dscf4074-238.jpg",
+      "slug": "dscf4074-238",
+      "alt": "Landscape photograph made in Mallorca, Spain.",
+      "caption": "Mallorca, Spain",
+      "details": "Fuji X100T"
     }
   ]
 }
