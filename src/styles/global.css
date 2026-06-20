@@ -707,6 +707,11 @@ body.mobile-nav-open {
         padding: 48px 18px 34px;
     }
 
+    .photo-frame,
+    .lightbox-frame {
+        flex: 0 1 auto;
+    }
+
     .photo-frame img,
     .photo-frame picture,
     .photo-frame picture img,
