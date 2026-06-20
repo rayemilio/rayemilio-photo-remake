@@ -71,7 +71,6 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   let previousFocus: Element | null = null;
   let isTransitioning = false;
   const transitionMs = 180;
-  const mobileGalleryQuery = window.matchMedia("(max-width: 760px)");
 
   function getCurrentItems(): LightboxItem[] {
     return galleries.get(currentGalleryId) ?? [];
@@ -79,10 +78,6 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
   function getCurrentItem(): LightboxItem | undefined {
     return getCurrentItems()[currentIndex];
-  }
-
-  function isMobileGalleryLayout(): boolean {
-    return mobileGalleryQuery.matches;
   }
 
   function createOverlay(): void {
@@ -345,11 +340,6 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     const link = target.closest<HTMLAnchorElement>("a[data-lightbox-photo]");
 
     if (!link) {
-      return;
-    }
-
-    if (isMobileGalleryLayout()) {
-      event.preventDefault();
       return;
     }
 

@@ -568,10 +568,13 @@ body.mobile-nav-open {
 
 @media (max-width: 760px) {
     :root {
-        --mobile-header-spacing: 29px;
-        --mobile-header-bottom-spacing: 10px;
+        --mobile-header-spacing: 6px;
+        --mobile-header-bottom-spacing: 5px;
+        --mobile-gallery-gap: 12px;
         --mobile-nav-button-size: 70px;
-        --mobile-header-height: calc(var(--mobile-header-spacing) + var(--mobile-header-bottom-spacing) + var(--mobile-nav-button-size));
+        --mobile-header-height: calc(
+            var(--mobile-header-spacing) + var(--mobile-header-bottom-spacing) + var(--mobile-nav-button-size)
+        );
     }
 
     .site-nav {
@@ -584,9 +587,11 @@ body.mobile-nav-open {
         display: flex;
         font-family: var(--nav-font);
         justify-content: space-between;
+        left: 0;
         min-height: var(--mobile-header-height);
         padding: var(--mobile-header-spacing) 20px var(--mobile-header-bottom-spacing) 40px;
-        position: sticky;
+        position: fixed;
+        right: 0;
         top: 0;
         transition: transform 220ms ease;
         will-change: transform;
@@ -688,7 +693,14 @@ body.mobile-nav-open {
 
     .site-main {
         margin-left: 0;
-        padding: 28px 16px 48px;
+        padding: calc(var(--mobile-header-height) + 28px) 16px 48px;
+    }
+
+    .home-image {
+        margin-left: -16px;
+        margin-right: -16px;
+        max-width: none;
+        width: 100vw;
     }
 
     .home-quote p,
@@ -697,39 +709,27 @@ body.mobile-nav-open {
     }
 
     .gallery-page {
-        margin-left: -16px;
-        margin-right: -16px;
+        margin-left: calc(var(--mobile-gallery-gap) - 16px);
+        margin-right: calc(var(--mobile-gallery-gap) - 16px);
     }
 
     .gallery-grid {
-        column-count: 1;
-        column-gap: 0;
+        column-count: 2;
+        column-gap: var(--mobile-gallery-gap);
         max-width: none;
         width: 100%;
     }
 
     .gallery-link {
-        cursor: default;
-        pointer-events: none;
+        cursor: pointer;
     }
 
     .gallery-item {
-        margin-bottom: 60px;
+        margin-bottom: var(--mobile-gallery-gap);
     }
 
     .gallery-caption {
-        color: var(--muted);
-        display: flex;
-        flex-direction: column;
-        font-family: var(--mono);
-        font-size: 11px;
-        font-weight: 300;
-        gap: 0;
-        line-height: 1.45;
-        margin-top: 8px;
-        padding-left: 16px;
-        padding-right: 16px;
-        text-align: left;
+        display: none;
     }
 
     .photo-route,
