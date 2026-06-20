@@ -588,7 +588,23 @@ body.mobile-nav-open {
         padding: var(--mobile-header-spacing) 20px var(--mobile-header-bottom-spacing) 40px;
         position: sticky;
         top: 0;
+        transition: transform 220ms ease;
+        will-change: transform;
         z-index: 30;
+    }
+
+    .mobile-header.mobile-header-hidden {
+        transform: translateY(-100%);
+    }
+
+    .mobile-nav-open .mobile-header {
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .mobile-header {
+            transition: none;
+        }
     }
 
     .mobile-title {
