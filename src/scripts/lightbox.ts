@@ -79,12 +79,14 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   let historyDepth = 0;
   let pointerStartX: number | null = null;
   let previousFocus: Element | null = null;
-  let isTransitioning = false;
-  let queuedDelta: number | null = null;
+  let shouldRestoreFocusOnClose = false;
+  let targetIndex = 0;
   let renderToken = 0;
   let preloadRunId = 0;
+  let previewPreloadRunId = 0;
   const loadedFullSrcs = new Set<string>();
-  const transitionMs = 360;
+  const loadedPreviewSrcs = new Set<string>();
+  const previewLoadPromises = new Map<string, Promise<boolean>>();
 
   function getCurrentItems(): LightboxItem[] {
     return galleries.get(currentGalleryId) ?? [];
@@ -166,6 +168,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
     document.documentElement.classList.add("lightbox-open");
     document.body.classList.add("lightbox-open");
+    window.addEventListener("resize", syncCurrentImageDisplayFrame);
     overlay.focus();
   }
 
@@ -201,10 +204,41 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
   }
 
-  function waitForFade(): Promise<void> {
+  function clampIndex(index: number, itemCount: number): number {
+    return Math.min(Math.max(index, 0), Math.max(itemCount - 1, 0));
+  }
+
+  function waitForAnimationFrame(): Promise<void> {
     return new Promise((resolve) => {
-      window.setTimeout(resolve, transitionMs);
+      requestAnimationFrame(() => resolve());
     });
+  }
+
+  async function waitForCommittedImagePaint(src: string, token: number): Promise<boolean> {
+    if (!image) {
+      return false;
+    }
+
+    const targetImage = image;
+    const expectedSrc = new URL(src, window.location.href).href;
+
+    for (let frame = 0; frame < 120; frame += 1) {
+      if (token !== renderToken || !image || image !== targetImage) {
+        return false;
+      }
+
+      if (targetImage.currentSrc === expectedSrc && targetImage.complete && targetImage.naturalWidth > 0) {
+        await targetImage.decode?.().catch(() => undefined);
+        await waitForAnimationFrame();
+        await waitForAnimationFrame();
+
+        return token === renderToken && !!image && image === targetImage && targetImage.currentSrc === expectedSrc;
+      }
+
+      await waitForAnimationFrame();
+    }
+
+    return false;
   }
 
   function hideFigureImmediately(): void {
@@ -252,8 +286,25 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       return;
     }
 
+    const aspectRatio = item.width / item.height;
+    const maxWidth = Math.min(window.innerWidth, 2200, item.width);
+    const maxHeight = Math.max(window.innerHeight - 72, 1);
+    const displayWidth = Math.min(maxWidth, maxHeight * aspectRatio);
+    const displayHeight = displayWidth / aspectRatio;
+
     image.style.aspectRatio = `${item.width} / ${item.height}`;
-    image.style.width = "";
+    image.style.width = `${displayWidth}px`;
+    image.style.height = `${displayHeight}px`;
+  }
+
+  function syncCurrentImageDisplayFrame(): void {
+    const item = getCurrentItem();
+
+    if (!item) {
+      return;
+    }
+
+    setImageDisplayFrame(item);
   }
 
   function createImageLoader(item: LightboxItem, src: string): HTMLImageElement {
@@ -280,6 +331,31 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
   async function prepareImageSource(item: LightboxItem, src: string): Promise<boolean> {
     return waitForImageLoad(createImageLoader(item, src));
+  }
+
+  async function preparePreviewImage(item: LightboxItem): Promise<boolean> {
+    if (loadedPreviewSrcs.has(item.previewSrc)) {
+      return true;
+    }
+
+    const existingLoad = previewLoadPromises.get(item.previewSrc);
+
+    if (existingLoad) {
+      return existingLoad;
+    }
+
+    const load = prepareImageSource(item, item.previewSrc).then((loaded) => {
+      if (loaded) {
+        loadedPreviewSrcs.add(item.previewSrc);
+      } else {
+        previewLoadPromises.delete(item.previewSrc);
+      }
+
+      return loaded;
+    });
+
+    previewLoadPromises.set(item.previewSrc, load);
+    return load;
   }
 
   async function prepareFullImage(item: LightboxItem): Promise<boolean> {
@@ -317,6 +393,36 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
   function stopFullImageWarmQueue(): void {
     preloadRunId += 1;
+  }
+
+  function stopPreviewImageWarmQueue(): void {
+    previewPreloadRunId += 1;
+  }
+
+  async function warmPreviewImagesFrom(startIndex: number, runId: number): Promise<void> {
+    const items = getCurrentItems();
+    const indices = [startIndex, ...getWarmQueueIndices(startIndex, items.length)];
+
+    for (const index of indices) {
+      if (runId !== previewPreloadRunId || !overlay) {
+        return;
+      }
+
+      const item = items[index];
+
+      if (!item || loadedPreviewSrcs.has(item.previewSrc)) {
+        continue;
+      }
+
+      await preparePreviewImage(item);
+    }
+  }
+
+  function startPreviewImageWarmQueue(startIndex: number): void {
+    stopPreviewImageWarmQueue();
+
+    const runId = previewPreloadRunId;
+    void warmPreviewImagesFrom(startIndex, runId);
   }
 
   async function warmFullImagesFrom(startIndex: number, runId: number): Promise<void> {
@@ -367,20 +473,21 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     const items = getCurrentItems();
     const item = items[index];
 
-    if (!item || isTransitioning) {
+    if (!item) {
       return;
     }
 
+    targetIndex = index;
     const isFirstRender = !overlay;
-    currentIndex = index;
     createOverlay();
 
     if (!image || !lightboxFigure) {
       return;
     }
 
-    isTransitioning = true;
     stopFullImageWarmQueue();
+    startPreviewImageWarmQueue(index);
+
     const token = renderToken + 1;
     renderToken = token;
     const shouldAnimate = !prefersReducedMotion();
@@ -397,29 +504,34 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     let fullReady = loadedFullSrcs.has(item.src);
 
     if (!fullReady) {
-      const previewLoaded = await prepareImageSource(item, item.previewSrc);
-      displaySrc = item.previewSrc;
-
-      if (previewLoaded && item.previewSrc === item.src) {
-        loadedFullSrcs.add(item.src);
-        fullReady = true;
-      }
+      const previewLoaded = await preparePreviewImage(item);
 
       if (token !== renderToken || !overlay || !image || !lightboxFigure) {
         return;
       }
 
-      if (!previewLoaded && item.previewSrc !== item.src) {
+      if (previewLoaded) {
+        displaySrc = item.previewSrc;
+
+        if (item.previewSrc === item.src) {
+          loadedFullSrcs.add(item.src);
+          fullReady = true;
+        }
+      } else if (item.previewSrc !== item.src) {
         const fullLoaded = await prepareFullImage(item);
 
         if (token !== renderToken || !overlay || !image || !lightboxFigure) {
           return;
         }
 
-        if (fullLoaded) {
-          displaySrc = item.src;
-          fullReady = true;
+        if (!fullLoaded) {
+          return;
         }
+
+        displaySrc = item.src;
+        fullReady = true;
+      } else {
+        return;
       }
     }
 
@@ -429,6 +541,15 @@ if (!runtimeWindow.__photoLightboxInitialized) {
 
     commitImage(item, displaySrc);
     renderCaption(item);
+
+    const readyToReveal = await waitForCommittedImagePaint(displaySrc, token);
+
+    if (!readyToReveal || token !== renderToken || !lightboxFigure) {
+      return;
+    }
+
+    currentIndex = index;
+    targetIndex = index;
     setButtonState();
 
     if (shouldPush) {
@@ -445,37 +566,23 @@ if (!runtimeWindow.__photoLightboxInitialized) {
       );
     }
 
+    lightboxFigure.classList.remove("photo-viewer-hidden");
+
     if (fullReady) {
       startFullImageWarmQueue(currentIndex);
     } else if (displaySrc !== item.src) {
       void promoteFullImage(item, token);
     }
-
-    if (shouldAnimate) {
-      requestAnimationFrame(() => {
-        lightboxFigure?.classList.remove("photo-viewer-hidden");
-      });
-      await waitForFade();
-    } else {
-      lightboxFigure.classList.remove("photo-viewer-hidden");
-    }
-
-    isTransitioning = false;
-
-    if (queuedDelta !== null) {
-      const delta = queuedDelta;
-      queuedDelta = null;
-      moveBy(delta);
-    }
   }
 
-  function open(galleryId: string, index: number): void {
+  function open(galleryId: string, index: number, restoreFocusOnClose = false): void {
     if (!galleries.has(galleryId)) {
       return;
     }
 
     currentGalleryId = galleryId;
     historyDepth = 0;
+    shouldRestoreFocusOnClose = restoreFocusOnClose;
     void render(index, true);
   }
 
@@ -488,17 +595,20 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     previousButton = null;
     nextButton = null;
     pointerStartX = null;
-    queuedDelta = null;
     stopFullImageWarmQueue();
+    stopPreviewImageWarmQueue();
     renderToken += 1;
     historyDepth = 0;
-    isTransitioning = false;
     document.documentElement.classList.remove("lightbox-open");
     document.body.classList.remove("lightbox-open");
+    window.removeEventListener("resize", syncCurrentImageDisplayFrame);
 
-    if (previousFocus instanceof HTMLElement) {
-      previousFocus.focus();
+    if (shouldRestoreFocusOnClose && previousFocus instanceof HTMLElement) {
+      previousFocus.focus({ preventScroll: true });
     }
+
+    previousFocus = null;
+    shouldRestoreFocusOnClose = false;
   }
 
   function closeFromButton(): void {
@@ -512,14 +622,15 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   }
 
   function moveBy(delta: number): void {
-    if (isTransitioning) {
+    const items = getCurrentItems();
+
+    if (items.length === 0) {
       return;
     }
 
-    const items = getCurrentItems();
-    const nextIndex = currentIndex + delta;
+    const nextIndex = clampIndex(targetIndex + delta, items.length);
 
-    if (nextIndex < 0 || nextIndex >= items.length) {
+    if (nextIndex === targetIndex) {
       return;
     }
 
@@ -527,11 +638,6 @@ if (!runtimeWindow.__photoLightboxInitialized) {
   }
 
   function requestMoveBy(delta: number): void {
-    if (isTransitioning) {
-      queuedDelta = delta;
-      return;
-    }
-
     moveBy(delta);
   }
 
@@ -560,7 +666,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     event.preventDefault();
-    open(galleryId, index);
+    open(galleryId, index, event instanceof MouseEvent && event.detail === 0);
   });
 
   document.addEventListener("keydown", (event) => {
@@ -590,6 +696,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     if (state?.photoLightbox && galleries.has(state.galleryId)) {
       currentGalleryId = state.galleryId;
       historyDepth = state.depth;
+      targetIndex = state.index;
       void render(state.index, false);
       return;
     }
