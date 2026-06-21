@@ -493,7 +493,7 @@ button:focus-visible {
 }
 
 .lightbox-image {
-    max-height: calc(100vh - 144px);
+    max-height: calc(100vh - 72px);
 }
 
 .lightbox-caption {
@@ -578,7 +578,8 @@ button:focus-visible {
     display: flex;
     height: 100vh;
     inset: 0;
-    padding: 58px 72px;
+    padding: 24px 0 14px;
+    justify-content: center;
     position: fixed;
     width: 100vw;
     z-index: 100;
@@ -744,7 +745,7 @@ body.mobile-nav-open {
 
     .site-main {
         margin-left: 0;
-        padding: calc(var(--mobile-header-height) + 28px) 16px 48px;
+        padding: var(--mobile-header-height) 16px 48px;
     }
 
     .home-image,
@@ -784,9 +785,12 @@ body.mobile-nav-open {
         display: none;
     }
 
-    .photo-route,
-    .lightbox {
+    .photo-route {
         padding: 42px 0 18px;
+    }
+
+    .lightbox {
+        padding: 24px 0 14px;
     }
 
     .lightbox-figure {
@@ -816,7 +820,7 @@ body.mobile-nav-open {
     }
 
     .lightbox-image {
-        max-height: calc(100vh - 90px);
+        max-height: calc(100vh - 72px);
         max-width: 100vw;
     }
 

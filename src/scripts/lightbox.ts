@@ -253,7 +253,7 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     image.style.aspectRatio = `${item.width} / ${item.height}`;
-    image.style.width = `${item.width}px`;
+    image.style.width = "";
   }
 
   function createImageLoader(item: LightboxItem, src: string): HTMLImageElement {
