@@ -26,6 +26,14 @@
     box-sizing: border-box;
 }
 
+::selection {
+    background: #e2e2e2;
+}
+
+::-moz-selection {
+    background: #e2e2e2;
+}
+
 html {
     background: var(--background);
     color: var(--text);
