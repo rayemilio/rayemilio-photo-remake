@@ -641,6 +641,10 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     moveBy(delta);
   }
 
+  function shouldUsePhotoPageOnThisDevice(): boolean {
+    return window.matchMedia("(pointer: coarse), (hover: none), (max-width: 760px)").matches;
+  }
+
   document.addEventListener("click", (event) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
@@ -655,6 +659,10 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     const link = target.closest<HTMLAnchorElement>("a[data-lightbox-photo]");
 
     if (!link) {
+      return;
+    }
+
+    if (shouldUsePhotoPageOnThisDevice()) {
       return;
     }
 

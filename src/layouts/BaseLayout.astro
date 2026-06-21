@@ -35,6 +35,7 @@ function isActive(href: string): boolean {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
     <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
     <link rel="preload" href="/fonts/qkBbXvYC6trAT7RVLtyU5rZP.woff2" as="font" type="font/woff2" crossorigin />
     {preloadMono && (
@@ -90,16 +91,10 @@ function isActive(href: string): boolean {
     </div>
 
     <script>
-      const mobileHeader = document.querySelector<HTMLElement>(".mobile-header");
+      import "../scripts/imageReveal";
+
       const toggle = document.querySelector<HTMLButtonElement>(".mobile-toggle");
       const mobileNav = document.querySelector<HTMLElement>("#mobile-nav");
-      const mobileHeaderQuery = window.matchMedia("(max-width: 760px)");
-      let lastScrollY = Math.max(window.scrollY, 0);
-      let isScrollUpdateQueued = false;
-
-      function setMobileHeaderHidden(isHidden: boolean) {
-        mobileHeader?.classList.toggle("mobile-header-hidden", isHidden);
-      }
 
       function setMobileNavOpen(isOpen: boolean) {
         toggle?.setAttribute("aria-expanded", String(isOpen));
@@ -108,42 +103,6 @@ function isActive(href: string): boolean {
         }
         document.documentElement.classList.toggle("mobile-nav-open", isOpen);
         document.body.classList.toggle("mobile-nav-open", isOpen);
-        if (isOpen) {
-          setMobileHeaderHidden(false);
-        }
-      }
-
-      function updateMobileHeaderVisibility() {
-        isScrollUpdateQueued = false;
-
-        if (!mobileHeader || !mobileHeaderQuery.matches || toggle?.getAttribute("aria-expanded") === "true") {
-          setMobileHeaderHidden(false);
-          lastScrollY = Math.max(window.scrollY, 0);
-          return;
-        }
-
-        const currentScrollY = Math.max(window.scrollY, 0);
-        const scrollDelta = currentScrollY - lastScrollY;
-        const hideStart = Math.max(160, mobileHeader.offsetHeight + 72);
-
-        if (currentScrollY <= 24) {
-          setMobileHeaderHidden(false);
-        } else if (scrollDelta > 8 && currentScrollY > hideStart) {
-          setMobileHeaderHidden(true);
-        } else if (scrollDelta < -8) {
-          setMobileHeaderHidden(false);
-        }
-
-        lastScrollY = currentScrollY;
-      }
-
-      function queueMobileHeaderVisibilityUpdate() {
-        if (isScrollUpdateQueued) {
-          return;
-        }
-
-        isScrollUpdateQueued = true;
-        window.requestAnimationFrame(updateMobileHeaderVisibility);
       }
 
       toggle?.addEventListener("click", () => {
@@ -158,9 +117,6 @@ function isActive(href: string): boolean {
           toggle.focus();
         }
       });
-
-      window.addEventListener("scroll", queueMobileHeaderVisibilityUpdate, { passive: true });
-      mobileHeaderQuery.addEventListener("change", updateMobileHeaderVisibility);
     </script>
   </body>
 </html>

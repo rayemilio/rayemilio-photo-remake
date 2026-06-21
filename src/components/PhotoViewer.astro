@@ -10,6 +10,9 @@ type Props = {
 
 const { gallery, photo } = Astro.props;
 const pageTitle = `${photo.caption || photo.slug} | ${gallery.title}`;
+const currentPhotoIndex = gallery.photos.findIndex((galleryPhoto) => galleryPhoto.href === photo.href);
+const previousPhoto = currentPhotoIndex > 0 ? gallery.photos[currentPhotoIndex - 1] : undefined;
+const nextPhoto = currentPhotoIndex >= 0 ? gallery.photos[currentPhotoIndex + 1] : undefined;
 const optimizedPhoto = photo.isSvg
   ? undefined
   : await getImage({
@@ -18,6 +21,26 @@ const optimizedPhoto = photo.isSvg
       format: "webp",
       quality: 90
     });
+const [previousPrefetchImage, nextPrefetchImage] = await Promise.all(
+  [previousPhoto, nextPhoto].map(async (adjacentPhoto) => {
+    if (!adjacentPhoto) {
+      return undefined;
+    }
+
+    if (adjacentPhoto.isSvg) {
+      return adjacentPhoto.image.src;
+    }
+
+    const optimizedAdjacentPhoto = await getImage({
+      src: adjacentPhoto.image,
+      width: Math.min(adjacentPhoto.width, 2400),
+      format: "webp",
+      quality: 90
+    });
+
+    return optimizedAdjacentPhoto.src;
+  })
+);
 ---
 
 <!doctype html>
@@ -27,6 +50,10 @@ const optimizedPhoto = photo.isSvg
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={photo.caption || photo.alt || gallery.title} />
     <title>{pageTitle}</title>
+    {previousPhoto && <link rel="prefetch" href={previousPhoto.href} />}
+    {nextPhoto && <link rel="prefetch" href={nextPhoto.href} />}
+    {previousPrefetchImage && <link rel="prefetch" as="image" href={previousPrefetchImage} />}
+    {nextPrefetchImage && <link rel="prefetch" as="image" href={nextPrefetchImage} />}
     <script is:inline>
       document.documentElement.classList.add("photo-transition-enabled");
     </script>
@@ -39,16 +66,28 @@ const optimizedPhoto = photo.isSvg
         </svg>
       </a>
 
-      {photo.previousHref && (
-        <a class="photo-arrow photo-arrow-prev" href={photo.previousHref} aria-label="Previous photo">
+      {previousPhoto && (
+        <a
+          class="photo-arrow photo-arrow-prev"
+          href={previousPhoto.href}
+          aria-label="Previous photo"
+          data-prefetch-href={previousPhoto.href}
+          data-prefetch-image={previousPrefetchImage}
+        >
           <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
             <path d="M42.076 80.362l1.285-1.284c.852-.85.852-2.23 0-3.081L7.835 40.5 43.36 5.003c.852-.85.852-2.23 0-3.081L42.076.638a2.182 2.182 0 00-3.084 0L.64 38.96a2.178 2.178 0 000 3.082l38.353 38.32a2.182 2.182 0 003.084 0z"></path>
           </svg>
         </a>
       )}
 
-      {photo.nextHref && (
-        <a class="photo-arrow photo-arrow-next" href={photo.nextHref} aria-label="Next photo">
+      {nextPhoto && (
+        <a
+          class="photo-arrow photo-arrow-next"
+          href={nextPhoto.href}
+          aria-label="Next photo"
+          data-prefetch-href={nextPhoto.href}
+          data-prefetch-image={nextPrefetchImage}
+        >
           <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
             <path d="M1.924.638L.639 1.922a2.178 2.178 0 000 3.081L36.165 40.5.64 75.997a2.178 2.178 0 000 3.081l1.285 1.284c.851.85 2.232.85 3.084 0L43.36 42.04a2.178 2.178 0 000-3.082L5.008.64a2.182 2.182 0 00-3.084 0z"></path>
           </svg>
@@ -92,6 +131,9 @@ const optimizedPhoto = photo.isSvg
       const closeLink = document.querySelector<HTMLAnchorElement>(".photo-close");
       const previousLink = document.querySelector<HTMLAnchorElement>(".photo-arrow-prev");
       const nextLink = document.querySelector<HTMLAnchorElement>(".photo-arrow-next");
+      const adjacentLinks = [nextLink, previousLink].filter((link): link is HTMLAnchorElement => Boolean(link));
+      const warmedImages = new Set<string>();
+      const warmedPages = new Set<string>();
 
       async function waitForPhotoImage() {
         if (!image) {
@@ -119,22 +161,60 @@ const optimizedPhoto = photo.isSvg
         await waitForPhotoImage();
         requestAnimationFrame(() => {
           document.body.classList.add("photo-ready");
+          warmAdjacentPhotos();
         });
+      }
+
+      function warmImage(src: string) {
+        if (!src || warmedImages.has(src)) {
+          return;
+        }
+
+        warmedImages.add(src);
+        const warmImage = new Image();
+        warmImage.decoding = "async";
+        warmImage.src = src;
+        void warmImage.decode?.().catch(() => undefined);
+      }
+
+      function warmPage(href: string) {
+        if (!href || warmedPages.has(href)) {
+          return;
+        }
+
+        warmedPages.add(href);
+        void fetch(href, { credentials: "same-origin" }).catch(() => undefined);
+      }
+
+      function warmAdjacentPhotos() {
+        const warm = () => {
+          adjacentLinks.forEach((link) => {
+            warmPage(link.dataset.prefetchHref || link.href);
+            warmImage(link.dataset.prefetchImage || "");
+          });
+        };
+
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(warm, { timeout: 600 });
+          return;
+        }
+
+        setTimeout(warm, 120);
       }
 
       revealPhoto();
 
       let isNavigating = false;
 
-      async function navigateTo(url: string) {
+      async function navigateTo(url: string, fadeOut = false) {
         if (isNavigating) {
           return;
         }
 
         isNavigating = true;
-        document.body.classList.add("photo-leaving");
 
-        if (!reduceMotion.matches) {
+        if (fadeOut && !reduceMotion.matches) {
+          document.body.classList.add("photo-leaving");
           await waitForFadeOut();
         }
 
@@ -147,7 +227,7 @@ const optimizedPhoto = photo.isSvg
         }
 
         event.preventDefault();
-        await navigateTo(closeLink.href);
+        await navigateTo(closeLink.href, true);
       });
 
       document.querySelectorAll<HTMLAnchorElement>(".photo-arrow").forEach((link) => {
@@ -168,7 +248,7 @@ const optimizedPhoto = photo.isSvg
 
         if (event.key === "Escape" && closeLink) {
           event.preventDefault();
-          void navigateTo(closeLink.href);
+          void navigateTo(closeLink.href, true);
         }
 
         if (event.key === "ArrowLeft" && previousLink) {

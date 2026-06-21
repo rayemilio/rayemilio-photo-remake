@@ -141,7 +141,10 @@ button:focus-visible {
     text-transform: none;
 }
 
-.nav-links a:hover,
+.nav-links a:hover {
+    color: #686868;
+}
+
 .mobile-nav a:hover {
     color: var(--text);
 }
@@ -238,6 +241,33 @@ button:focus-visible {
     column-gap: 28px;
     margin: 0 auto;
     max-width: var(--content-max);
+}
+
+@media (min-width: 761px) {
+    .js [data-image-reveal][data-reveal-state="pending"] {
+        opacity: 0;
+    }
+
+    .js [data-image-reveal][data-reveal-state="ready"] {
+        animation: image-reveal 620ms ease both;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js [data-image-reveal][data-reveal-state] {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+@keyframes image-reveal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .gallery-item {
@@ -593,8 +623,8 @@ button:focus-visible {
     display: flex;
     height: 100vh;
     inset: 0;
-    padding: 24px 0 14px;
     justify-content: center;
+    padding: 24px 0 14px;
     position: fixed;
     width: 100vw;
     z-index: 100;
@@ -660,23 +690,7 @@ body.mobile-nav-open {
         position: fixed;
         right: 0;
         top: 0;
-        transition: transform 220ms ease;
-        will-change: transform;
         z-index: 30;
-    }
-
-    .mobile-header.mobile-header-hidden {
-        transform: translateY(-100%);
-    }
-
-    .mobile-nav-open .mobile-header {
-        transform: translateY(0);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .mobile-header {
-            transition: none;
-        }
     }
 
     .mobile-title {
@@ -804,27 +818,9 @@ body.mobile-nav-open {
         padding: 42px 0 18px;
     }
 
-    .lightbox {
-        padding: 24px 0 14px;
-    }
-
-    .lightbox-figure {
-        gap: 8px;
-        max-width: 100vw;
-        min-height: calc(100vh - 60px);
-        width: auto;
-    }
-
-    .photo-frame,
-    .lightbox-frame {
+    .photo-frame {
         flex: 0 1 auto;
         width: 100vw;
-    }
-
-    .lightbox-frame {
-        flex: 0 1 auto;
-        max-width: 100vw;
-        width: fit-content;
     }
 
     .photo-frame img,
@@ -834,28 +830,23 @@ body.mobile-nav-open {
         max-width: 100vw;
     }
 
-    .lightbox-image {
-        max-height: calc(100vh - 72px);
-        max-width: 100vw;
-    }
-
-    .photo-caption,
-    .lightbox-caption {
+    .photo-caption {
         padding-left: 18px;
         padding-right: 18px;
     }
 
     .photo-arrow {
+        display: flex;
+        opacity: 0;
+        touch-action: manipulation;
+        width: 50vw;
+    }
+
+    .photo-arrow .photo-arrow-icon {
         display: none;
     }
 
-    .lightbox-side {
-        display: flex;
-        opacity: 0;
-    }
-
-    .photo-close,
-    .lightbox-close {
+    .photo-close {
         height: 62px;
         width: 62px;
     }

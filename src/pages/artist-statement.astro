@@ -14,7 +14,7 @@ const optimizedArtistStatementPhoto = await getImage({
 ---
 
 <BaseLayout title="Artist Statement" description={site.description}>
-  <article class="artist-statement-page">
+  <article class="artist-statement-page" data-image-reveal="page" data-reveal-state="pending">
     <figure class="artist-statement-photo">
       <img
         src={optimizedArtistStatementPhoto.src}

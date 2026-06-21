@@ -53,7 +53,7 @@ const lightboxItems = await Promise.all(
   import "../scripts/lightbox";
 </script>
 
-<div class="gallery-grid" data-gallery={gallery.slug}>
+<div class="gallery-grid" data-gallery={gallery.slug} data-image-reveal="gallery" data-reveal-state="pending">
   {gallery.photos.map((photo, index) => (
     <a
       class="gallery-item gallery-link"

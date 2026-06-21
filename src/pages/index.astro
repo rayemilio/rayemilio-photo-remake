@@ -14,7 +14,7 @@ const optimizedHomePhoto = await getImage({
 ---
 
 <BaseLayout preloadImage={{ src: optimizedHomePhoto.src }} preloadMono>
-  <section class="home-hero" aria-label="Home">
+  <section class="home-hero" aria-label="Home" data-image-reveal="page" data-reveal-state="pending">
     <div class="home-image">
       <img
         src={optimizedHomePhoto.src}
