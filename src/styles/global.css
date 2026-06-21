@@ -414,7 +414,6 @@ button:focus-visible {
     align-items: center;
     display: flex;
     flex-direction: column;
-    gap: 18px;
     justify-content: center;
     margin: 0;
     min-height: calc(100vh - 116px);
@@ -423,11 +422,15 @@ button:focus-visible {
 }
 
 .photo-figure {
+    gap: 18px;
     transition: opacity 180ms ease;
 }
 
 .lightbox-figure {
+    gap: 10px;
+    max-width: 100%;
     transition: opacity 360ms ease;
+    width: auto;
 }
 
 .photo-transition-enabled .photo-page .photo-figure,
@@ -459,10 +462,19 @@ button:focus-visible {
 .lightbox-frame {
     align-items: center;
     display: flex;
-    flex: 1;
     justify-content: center;
     min-height: 0;
     width: 100%;
+}
+
+.photo-frame {
+    flex: 1;
+}
+
+.lightbox-frame {
+    flex: 0 1 auto;
+    max-width: 100%;
+    width: fit-content;
 }
 
 .photo-frame img,
@@ -478,6 +490,16 @@ button:focus-visible {
     -webkit-user-select: none;
     user-select: none;
     width: auto;
+}
+
+.lightbox-image {
+    max-height: calc(100vh - 144px);
+}
+
+.lightbox-caption {
+    flex: 0 0 auto;
+    max-width: min(100%, 2200px);
+    width: 100%;
 }
 
 .photo-caption,
@@ -764,7 +786,14 @@ body.mobile-nav-open {
 
     .photo-route,
     .lightbox {
-        padding: 48px 0 34px;
+        padding: 42px 0 18px;
+    }
+
+    .lightbox-figure {
+        gap: 8px;
+        max-width: 100vw;
+        min-height: calc(100vh - 60px);
+        width: auto;
     }
 
     .photo-frame,
@@ -773,11 +802,21 @@ body.mobile-nav-open {
         width: 100vw;
     }
 
+    .lightbox-frame {
+        flex: 0 1 auto;
+        max-width: 100vw;
+        width: fit-content;
+    }
+
     .photo-frame img,
     .photo-frame picture,
-    .photo-frame picture img,
-    .lightbox-image {
+    .photo-frame picture img {
         max-height: calc(100vh - 160px);
+        max-width: 100vw;
+    }
+
+    .lightbox-image {
+        max-height: calc(100vh - 90px);
         max-width: 100vw;
     }
 
