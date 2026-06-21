@@ -30,18 +30,6 @@ type NavigatorWithConnection = Navigator & {
   connection?: NavigatorConnection;
 };
 
-const previousIcon = `
-  <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
-    <path d="M42.076 80.362l1.285-1.284c.852-.85.852-2.23 0-3.081L7.835 40.5 43.36 5.003c.852-.85.852-2.23 0-3.081L42.076.638a2.182 2.182 0 00-3.084 0L.64 38.96a2.178 2.178 0 000 3.082l38.353 38.32a2.182 2.182 0 003.084 0z"></path>
-  </svg>
-`;
-
-const nextIcon = `
-  <svg class="photo-arrow-icon" viewBox="0 0 44 81" aria-hidden="true">
-    <path d="M1.924.638L.639 1.922a2.178 2.178 0 000 3.081L36.165 40.5.64 75.997a2.178 2.178 0 000 3.081l1.285 1.284c.851.85 2.232.85 3.084 0L43.36 42.04a2.178 2.178 0 000-3.082L5.008.64a2.182 2.182 0 00-3.084 0z"></path>
-  </svg>
-`;
-
 const closeIcon = `
   <svg class="photo-close-icon" viewBox="0 0 44 44" aria-hidden="true">
     <path d="M26.668 22L40.77 7.899l2.908-2.908a1.1 1.1 0 000-1.555L40.567.323a1.1 1.1 0 00-1.556 0l-17.01 17.01L4.99.323a1.1 1.1 0 00-1.555 0L.322 3.433a1.1 1.1 0 000 1.556L17.334 22 .322 39.01a1.1 1.1 0 000 1.556l3.111 3.111a1.1 1.1 0 001.556 0L22 26.668 36.103 40.77l2.908 2.908a1.1 1.1 0 001.556 0l3.111-3.111a1.1 1.1 0 000-1.556l-17.01-17.01z"></path>
@@ -119,14 +107,12 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     previousButton.className = "lightbox-side lightbox-prev";
     previousButton.type = "button";
     previousButton.setAttribute("aria-label", "Previous photo");
-    previousButton.innerHTML = previousIcon;
     previousButton.addEventListener("click", () => requestMoveBy(-1));
 
     nextButton = document.createElement("button");
     nextButton.className = "lightbox-side lightbox-next";
     nextButton.type = "button";
     nextButton.setAttribute("aria-label", "Next photo");
-    nextButton.innerHTML = nextIcon;
     nextButton.addEventListener("click", () => requestMoveBy(1));
 
     lightboxFigure = document.createElement("figure");
@@ -287,8 +273,10 @@ if (!runtimeWindow.__photoLightboxInitialized) {
     }
 
     const aspectRatio = item.width / item.height;
-    const maxWidth = Math.min(window.innerWidth, 2200, item.width);
-    const maxHeight = Math.max(window.innerHeight - 72, 1);
+    const preferredWidth = aspectRatio >= 1.15 ? 900 : aspectRatio >= 0.95 ? 760 : 640;
+    const horizontalGutter = Math.min(Math.max((window.innerWidth - 900) / 4, 0), 180);
+    const maxWidth = Math.min(Math.max(window.innerWidth - horizontalGutter * 2, 1), preferredWidth, item.width);
+    const maxHeight = Math.min(Math.max(window.innerHeight - 170, 1), item.height);
     const displayWidth = Math.min(maxWidth, maxHeight * aspectRatio);
     const displayHeight = displayWidth / aspectRatio;
 
