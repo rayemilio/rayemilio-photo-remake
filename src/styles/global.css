@@ -688,7 +688,7 @@ body.mobile-nav-open {
         justify-content: space-between;
         left: 0;
         min-height: var(--mobile-header-height);
-        padding: var(--mobile-header-spacing) 20px var(--mobile-header-bottom-spacing) 40px;
+        padding: var(--mobile-header-spacing) 20px var(--mobile-header-bottom-spacing) 16px;
         position: fixed;
         right: 0;
         top: 0;

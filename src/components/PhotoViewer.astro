@@ -219,7 +219,7 @@ const [previousPrefetchImage, nextPrefetchImage] = await Promise.all(
         }
 
         event.preventDefault();
-        await navigateTo(closeLink.href, true);
+        await navigateTo(closeLink.href);
       });
 
       document.querySelectorAll<HTMLAnchorElement>(".photo-arrow").forEach((link) => {
@@ -240,7 +240,7 @@ const [previousPrefetchImage, nextPrefetchImage] = await Promise.all(
 
         if (event.key === "Escape" && closeLink) {
           event.preventDefault();
-          void navigateTo(closeLink.href, true);
+          void navigateTo(closeLink.href);
         }
 
         if (event.key === "ArrowLeft" && previousLink) {
